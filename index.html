@@ -1,0 +1,773 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FARMEZE - Smart Agricultural Procurement</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; -webkit-tap-highlight-color: transparent; }
+        
+        /* ----------------------------------------------------------------
+           NATIVE CSS LOGIC (Zero JavaScript)
+           ---------------------------------------------------------------- */
+        .state-controller { display: none; }
+        #mainDashboard, #notificationMenu, #bookingModal, #paymentModal, #confirmModal { display: none; }
+
+        /* 1. 8-Language Hiding Logic */
+        .lang-en, .lang-hi, .lang-mr, .lang-pa, .lang-ta, .lang-ml, .lang-as, .lang-bn { display: none; }
+
+        /* 2. 8-Language Display Logic */
+        #lang-en:checked ~ .app-wrapper .lang-en,
+        #lang-hi:checked ~ .app-wrapper .lang-hi,
+        #lang-mr:checked ~ .app-wrapper .lang-mr,
+        #lang-pa:checked ~ .app-wrapper .lang-pa,
+        #lang-ta:checked ~ .app-wrapper .lang-ta,
+        #lang-ml:checked ~ .app-wrapper .lang-ml,
+        #lang-as:checked ~ .app-wrapper .lang-as,
+        #lang-bn:checked ~ .app-wrapper .lang-bn { display: inline-block !important; }
+
+        /* 3. Pure CSS Dropdown Logic (Hover/Focus) */
+        .lang-dropdown-wrapper:hover .lang-dropdown-menu,
+        .lang-dropdown-wrapper:focus-within .lang-dropdown-menu { display: flex; }
+
+        /* 4. Active Language Highlight in Dropdown */
+        #lang-en:checked ~ .app-wrapper .btn-lang-en,
+        #lang-hi:checked ~ .app-wrapper .btn-lang-hi,
+        #lang-mr:checked ~ .app-wrapper .btn-lang-mr,
+        #lang-pa:checked ~ .app-wrapper .btn-lang-pa,
+        #lang-ta:checked ~ .app-wrapper .btn-lang-ta,
+        #lang-ml:checked ~ .app-wrapper .btn-lang-ml,
+        #lang-as:checked ~ .app-wrapper .btn-lang-as,
+        #lang-bn:checked ~ .app-wrapper .btn-lang-bn {
+            background-color: #15803d !important; /* bg-green-700 */
+            color: white !important;
+        }
+
+        /* 5. Login Logic */
+        #login-toggle:checked ~ .app-wrapper #loginScreen { display: none; }
+        #login-toggle:checked ~ .app-wrapper #mainDashboard { display: block; }
+
+        /* 6. Notification Logic */
+        #notif-toggle:checked ~ .app-wrapper #notificationMenu { display: block; }
+
+        /* 7. Modal Routing Logic */
+        #state-booking:checked ~ .app-wrapper #bookingModal { display: flex; }
+        #state-payment:checked ~ .app-wrapper #paymentModal { display: flex; }
+        #state-confirm:checked ~ .app-wrapper #confirmModal { display: flex; }
+
+        /* 8. Custom Radio Button Logic for Slots */
+        input[name="centre"]:checked + label { background-color: #f0fdf4 !important; border-color: #16a34a !important; }
+        input[name="centre"]:checked + label .radio-outer { border-color: #16a34a !important; }
+        input[name="centre"]:checked + label .radio-inner { display: block !important; }
+        input[name="slot"]:checked + label { background-color: #16a34a !important; color: white !important; border-color: #16a34a !important; transform: scale(1.05); }
+
+        /* Animations & Utilities */
+        @keyframes highlightPulse {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); border-color: #22c55e; }
+            70% { box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); border-color: #22c55e; }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); border-color: #e5e7eb; }
+        }
+        #trackingCard { animation: highlightPulse 3s infinite ease-out; }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="text-gray-800 relative w-full min-h-screen">
+
+    <!-- LANGUAGE STATE CONTROLLERS -->
+    <input type="radio" name="lang" id="lang-en" class="state-controller" checked>
+    <input type="radio" name="lang" id="lang-hi" class="state-controller">
+    <input type="radio" name="lang" id="lang-mr" class="state-controller">
+    <input type="radio" name="lang" id="lang-pa" class="state-controller">
+    <input type="radio" name="lang" id="lang-ta" class="state-controller">
+    <input type="radio" name="lang" id="lang-ml" class="state-controller">
+    <input type="radio" name="lang" id="lang-as" class="state-controller">
+    <input type="radio" name="lang" id="lang-bn" class="state-controller">
+
+    <!-- APP STATE CONTROLLERS -->
+    <input type="checkbox" id="login-toggle" class="state-controller">
+    <input type="checkbox" id="notif-toggle" class="state-controller">
+    <input type="radio" name="modal-state" id="state-none" class="state-controller" checked>
+    <input type="radio" name="modal-state" id="state-booking" class="state-controller">
+    <input type="radio" name="modal-state" id="state-payment" class="state-controller">
+    <input type="radio" name="modal-state" id="state-confirm" class="state-controller">
+
+    <div class="app-wrapper w-full h-full">
+
+        <!-- ==================== LOGIN SCREEN ==================== -->
+        <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-green-600 p-4 absolute inset-0 z-0">
+            <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 sm:p-8 text-center">
+                <div class="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-wheat-awn text-4xl text-green-600"></i>
+                </div>
+                <h1 class="text-4xl font-extrabold text-gray-800 mb-2">FARMEZE</h1>
+                <p class="text-base text-gray-500 mb-8 font-medium">
+                    <span class="lang-en">Simple. Transparent. Fast.</span>
+                    <span class="lang-hi">सरल. पारदर्शी. तेज़.</span>
+                    <span class="lang-mr">सोपे. पारदर्शक. जलद.</span>
+                    <span class="lang-pa">ਸਧਾਰਨ. ਪਾਰਦਰਸ਼ੀ. ਤੇਜ਼.</span>
+                    <span class="lang-ta">எளிமையானது. வெளிப்படையானது. வேகமானது.</span>
+                    <span class="lang-ml">ലളിതം. സുതാര്യം. വേഗം.</span>
+                    <span class="lang-as">সৰল. স্বচ্ছ. দ্ৰুত.</span>
+                    <span class="lang-bn">সরল. স্বচ্ছ. দ্রুত.</span>
+                </p>
+                
+                <div class="space-y-5 text-left">
+                    <div>
+                        <label class="block text-lg font-bold text-gray-700 mb-2">
+                            <i class="fa-solid fa-phone text-green-600 mr-2"></i>
+                            <span class="lang-en">Mobile Number</span><span class="lang-hi">मोबाइल नंबर</span>
+                            <span class="lang-mr">मोबाईल नंबर</span><span class="lang-pa">ਮੋਬਾਈਲ ਨੰਬਰ</span>
+                            <span class="lang-ta">மொபைல் எண்</span><span class="lang-ml">മൊബൈൽ നമ്പർ</span>
+                            <span class="lang-as">ম'বাইল নম্বৰ</span><span class="lang-bn">মোবাইল নম্বর</span>
+                        </label>
+                        <input type="tel" value="9876543210" class="w-full border-2 border-gray-300 rounded-xl p-4 text-lg outline-none focus:border-green-500 bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="block text-lg font-bold text-gray-700 mb-2">
+                            <i class="fa-solid fa-lock text-green-600 mr-2"></i>OTP
+                        </label>
+                        <input type="password" value="1234" class="w-full border-2 border-gray-300 rounded-xl p-4 text-lg outline-none focus:border-green-500 bg-gray-50 tracking-[0.5em] font-bold">
+                    </div>
+                    
+                    <label for="login-toggle" class="block w-full bg-green-600 text-white font-extrabold text-xl py-4 rounded-xl hover:bg-green-700 shadow-lg mt-6 active:scale-95 transition text-center cursor-pointer">
+                        <span class="lang-en">Login to Dashboard</span><span class="lang-hi">डैशबोर्ड में प्रवेश करें</span>
+                        <span class="lang-mr">डॅशबोर्डवर जा</span><span class="lang-pa">ਡੈਸ਼ਬੋਰਡ ਵਿੱਚ ਲੌਗਇਨ ਕਰੋ</span>
+                        <span class="lang-ta">டாஷ்போர்டில் நுழைக</span><span class="lang-ml">ഡാഷ്‌ബോർഡിലേക്ക് ലോഗിൻ ചെയ്യുക</span>
+                        <span class="lang-as">ডেচবৰ্ডত প্ৰৱেশ কৰক</span><span class="lang-bn">ড্যাশবোর্ডে লগইন করুন</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== MAIN DASHBOARD ==================== -->
+        <div id="mainDashboard" class="pb-10 w-full relative z-10">
+            <nav class="bg-green-600 text-white shadow-lg sticky top-0 z-40 w-full">
+                <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-leaf text-2xl text-green-200"></i>
+                        <span class="text-2xl font-extrabold tracking-wide hidden sm:inline">FARMEZE</span>
+                    </div>
+                    <div class="flex items-center space-x-3 justify-end">
+                        
+                        <!-- PURE CSS DROPDOWN MENU FOR LANGUAGES -->
+                        <div class="lang-dropdown-wrapper relative outline-none z-50" tabindex="0">
+                            <!-- Dropdown Button (Looks exactly like your original button) -->
+                            <div class="bg-white text-green-700 font-bold px-4 py-2 rounded-lg shadow border-2 border-green-700 transition cursor-pointer select-none flex items-center active:scale-95">
+                                <i class="fa-solid fa-language mr-1 text-base"></i> 
+                                <span class="lang-en">English</span>
+                                <span class="lang-hi">हिंदी</span>
+                                <span class="lang-mr">मराठी</span>
+                                <span class="lang-pa">ਪੰਜਾਬੀ</span>
+                                <span class="lang-ta">தமிழ்</span>
+                                <span class="lang-ml">മലയാളം</span>
+                                <span class="lang-as">অসমীয়া</span>
+                                <span class="lang-bn">বাংলা</span>
+                                <i class="fa-solid fa-caret-down ml-2 text-sm opacity-70"></i>
+                            </div>
+                            
+                            <!-- Dropdown List -->
+                            <div class="lang-dropdown-menu absolute right-0 top-full mt-2 w-36 bg-white rounded-xl shadow-2xl border-2 border-green-700 overflow-hidden hidden flex-col transition-all">
+                                <label for="lang-en" class="btn-lang-en block px-4 py-3 text-sm font-bold text-gray-700 hover:bg-green-100 hover:text-green-800 cursor-pointer border-b border-gray-100">English</label>
+                                <label for="lang-hi" class="btn-lang-hi block px-4 py-3 text-sm font-bold text-gray-700 hover:bg-green-100 hover:text-green-800 cursor-pointer border-b border-gray-100">हिंदी</label>
+                                <label for="lang-mr" class="btn-lang-mr block px-4 py-3 text-sm font-bold text-gray-700 hover:bg-green-100 hover:text-green-800 cursor-pointer border-b border-gray-100">मराठी</label>
+                                <label for="lang-pa" class="btn-lang-pa block px-4 py-3 text-sm font-bold text-gray-700 hover:bg-green-100 hover:text-green-800 cursor-pointer border-b border-gray-100">ਪੰਜਾਬੀ</label>
+                                <label for="lang-ta" class="btn-lang-ta block px-4 py-3 text-sm font-bold text-gray-700 hover:bg-green-100 hover:text-green-800 cursor-pointer border-b border-gray-100">தமிழ்</label>
+                                <label for="lang-ml" class="btn-lang-ml block px-4 py-3 text-sm font-bold text-gray-700 hover:bg-green-100 hover:text-green-800 cursor-pointer border-b border-gray-100">മലയാളം</label>
+                                <label for="lang-as" class="btn-lang-as block px-4 py-3 text-sm font-bold text-gray-700 hover:bg-green-100 hover:text-green-800 cursor-pointer border-b border-gray-100">অসমীয়া</label>
+                                <label for="lang-bn" class="btn-lang-bn block px-4 py-3 text-sm font-bold text-gray-700 hover:bg-green-100 hover:text-green-800 cursor-pointer">বাংলা</label>
+                            </div>
+                        </div>
+
+                        <label for="notif-toggle" class="relative cursor-pointer bg-green-700 p-2 sm:p-3 rounded-xl shadow-inner active:scale-95 transition shrink-0">
+                            <i class="fa-regular fa-bell text-xl sm:text-2xl"></i>
+                            <span class="absolute -top-2 -right-2 bg-red-500 text-xs sm:text-sm font-bold text-white rounded-full h-5 w-5 sm:h-6 sm:w-6 flex items-center justify-center border-2 border-green-600">2</span>
+                        </label>
+                    </div>
+                </div>
+            </nav>
+
+            <div id="notificationMenu" class="absolute right-4 top-20 w-80 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                <div class="p-4 border-b text-lg font-bold text-gray-800 bg-gray-50 flex justify-between items-center">
+                    <span class="lang-en">Notifications</span><span class="lang-hi">सूचनाएं</span>
+                    <span class="lang-mr">सूचना</span><span class="lang-pa">ਸੂਚਨਾਵਾਂ</span>
+                    <span class="lang-ta">அறிவிப்புகள்</span><span class="lang-ml">അറിയിപ്പുകൾ</span>
+                    <span class="lang-as">জাননীসমূহ</span><span class="lang-bn">বিজ্ঞপ্তি</span>
+                    <label for="notif-toggle" class="text-gray-400 hover:text-gray-600 cursor-pointer"><i class="fa-solid fa-xmark text-xl"></i></label>
+                </div>
+                <label for="notif-toggle" class="block">
+                    <a href="#trackingContainer" class="block p-5 text-base border-b hover:bg-blue-50 cursor-pointer transition">
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-blue-100 p-2 rounded-full text-blue-600"><i class="fa-solid fa-microscope text-xl"></i></div>
+                            <div>
+                                <span class="text-gray-800 font-extrabold block">
+                                    <span class="lang-en">Verification Complete</span><span class="lang-hi">सत्यापन पूर्ण</span>
+                                    <span class="lang-mr">पडताळणी पूर्ण</span><span class="lang-pa">ਤਸਦੀਕ ਪੂਰੀ</span>
+                                    <span class="lang-ta">சரிபார்ப்பு முடிந்தது</span><span class="lang-ml">പരിശോധന പൂർത്തിയായി</span>
+                                    <span class="lang-as">প্ৰমাণীকৰণ সম্পূৰ্ণ</span><span class="lang-bn">যাচাইকরণ সম্পূর্ণ</span>
+                                </span>
+                                <span class="text-gray-600 mt-1 block">
+                                    <span class="lang-en">Lot #4092 passed quality check.</span><span class="lang-hi">लॉट #4092 गुणवत्ता जांच में पास हुआ।</span>
+                                    <span class="lang-mr">लॉट #4092 गुणवत्ता तपासणीत पास.</span><span class="lang-pa">ਲਾਟ #4092 ਗੁਣਵੱਤਾ ਜਾਂਚ ਪਾਸ ਕਰ ਗਿਆ।</span>
+                                    <span class="lang-ta">லாட் #4092 தர பரிசோதனையில் தேர்ச்சி.</span><span class="lang-ml">ലോട്ട് #4092 ഗുണനിലവാര പരിശോധന പാസായി.</span>
+                                    <span class="lang-as">লট #4092 গুণগত মানৰ পৰীক্ষাত উত্তীৰ্ণ।</span><span class="lang-bn">লট #4092 গুণমান পরীক্ষায় উত্তীর্ণ।</span>
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                </label>
+                <label for="state-payment" class="block p-5 text-base hover:bg-green-50 cursor-pointer transition" onclick="document.getElementById('notif-toggle').checked = false;">
+                    <div class="flex items-start space-x-3">
+                        <div class="bg-green-100 p-2 rounded-full text-green-600"><i class="fa-solid fa-indian-rupee-sign text-xl"></i></div>
+                        <div>
+                            <span class="text-gray-800 font-extrabold block">
+                                <span class="lang-en">Payment Initiated</span><span class="lang-hi">भुगतान शुरू किया गया</span>
+                                <span class="lang-mr">पेमेंट सुरू केले</span><span class="lang-pa">ਭੁਗਤਾਨ ਸ਼ੁਰੂ</span>
+                                <span class="lang-ta">கட்டணம் தொடங்கப்பட்டது</span><span class="lang-ml">പേയ്‌മെന്റ് ആരംഭിച്ചു</span>
+                                <span class="lang-as">পেমেন্ট আৰম্ভ কৰা হৈছে</span><span class="lang-bn">পেমেন্ট শুরু হয়েছে</span>
+                            </span>
+                            <span class="text-gray-600 mt-1 block">
+                                <span class="lang-en">₹42,500 transferred to SBI.</span><span class="lang-hi">SBI में ₹42,500 भेजे गए।</span>
+                                <span class="lang-mr">₹42,500 SBI मध्ये ट्रान्सफर केले.</span><span class="lang-pa">₹42,500 SBI ਵਿੱਚ ਭੇਜੇ ਗਏ।</span>
+                                <span class="lang-ta">₹42,500 SBI க்கு மாற்றப்பட்டது.</span><span class="lang-ml">₹42,500 എസ്ബിഐയിലേക്ക് മാറ്റി.</span>
+                                <span class="lang-as">₹42,500 SBI লৈ ট্ৰেন্সফাৰ কৰা হৈছে।</span><span class="lang-bn">₹42,500 SBI তে ট্রান্সফার করা হয়েছে।</span>
+                            </span>
+                        </div>
+                    </div>
+                </label>
+            </div>
+
+            <main class="max-w-4xl mx-auto px-4 py-6 space-y-6">
+                <!-- User Profile -->
+                <div class="bg-white rounded-3xl p-6 shadow-md border border-gray-200 flex items-center space-x-5">
+                    <div class="h-20 w-20 bg-green-100 text-green-700 rounded-full flex items-center justify-center text-3xl font-extrabold shrink-0 border-4 border-green-200">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-gray-800">
+                            <span class="lang-en">Harshit Verma</span><span class="lang-hi">हर्षित वर्मा</span>
+                            <span class="lang-mr">हर्षित वर्मा</span><span class="lang-pa">ਹਰਸ਼ਿਤ ਵਰਮਾ</span>
+                            <span class="lang-ta">ஹர்ஷித் வர்மா</span><span class="lang-ml">ഹർഷിത് വർമ്മ</span>
+                            <span class="lang-as">হৰ্ষিত বৰ্মা</span><span class="lang-bn">হর্ষিত বর্মা</span>
+                        </h2>
+                        <p class="text-base text-gray-600 font-medium mt-1">
+                            <i class="fa-solid fa-location-dot text-red-500 mr-2"></i>
+                            <span class="lang-en">Bhopal, MP</span><span class="lang-hi">भोपाल, म.प्र.</span>
+                            <span class="lang-mr">भोपाळ, मध्य प्रदेश</span><span class="lang-pa">ਭੋਪਾਲ, ਐਮ.ਪੀ.</span>
+                            <span class="lang-ta">போபால், எம்.பி</span><span class="lang-ml">ഭോപ്പാൽ, എം.പി.</span>
+                            <span class="lang-as">ভোপাল, মধ্যপ্ৰদেশ</span><span class="lang-bn">ভোপাল, এম.পি.</span>
+                        </p>
+                        <div class="mt-2 inline-flex items-center bg-blue-50 text-blue-700 text-sm font-bold px-3 py-1.5 rounded-lg border border-blue-200">
+                            <i class="fa-solid fa-id-card mr-2"></i> ID: FRM-2026-892
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <label for="state-booking" class="bg-gradient-to-b from-green-500 to-green-600 text-white rounded-3xl p-6 shadow-lg hover:shadow-xl active:scale-95 transition flex flex-col items-center justify-center border border-green-700 cursor-pointer">
+                        <i class="fa-solid fa-truck-ramp-box text-5xl mb-4 drop-shadow-md"></i>
+                        <span class="font-extrabold text-xl sm:text-2xl text-center leading-tight">
+                            <span class="lang-en">Book Mandi Slot</span><span class="lang-hi">मंडी स्लॉट बुक करें</span>
+                            <span class="lang-mr">मंडी स्लॉट बुक करा</span><span class="lang-pa">ਮੰਡੀ ਸਲਾਟ ਬੁੱਕ ਕਰੋ</span>
+                            <span class="lang-ta">மண்டி ஸ்லாட்டை முன்பதிவு செய்</span><span class="lang-ml">മണ്ടി സ്ലോട്ട് ബുക്ക് ചെയ്യുക</span>
+                            <span class="lang-as">মাণ্ডি স্লট বুক কৰক</span><span class="lang-bn">মান্ডি স্লট বুক করুন</span>
+                        </span>
+                    </label>
+                    <label for="state-payment" class="bg-gradient-to-b from-blue-500 to-blue-600 text-white rounded-3xl p-6 shadow-lg hover:shadow-xl active:scale-95 transition flex flex-col items-center justify-center border border-blue-700 cursor-pointer">
+                        <i class="fa-solid fa-wallet text-5xl mb-4 drop-shadow-md"></i>
+                        <span class="font-extrabold text-xl sm:text-2xl text-center leading-tight">
+                            <span class="lang-en">My Payments</span><span class="lang-hi">मेरे भुगतान</span>
+                            <span class="lang-mr">माझे पेमेंट्स</span><span class="lang-pa">ਮੇਰੇ ਭੁਗਤਾਨ</span>
+                            <span class="lang-ta">எனது கொடுப்பனவுகள்</span><span class="lang-ml">എന്റെ പേയ്‌മെന്റുകൾ</span>
+                            <span class="lang-as">মোৰ পেমেন্ট</span><span class="lang-bn">আমার পেমেন্ট</span>
+                        </span>
+                    </label>
+                </div>
+
+                <!-- ==================== LIVE MSP PRICES ==================== -->
+                <div>
+                    <h3 class="text-xl font-extrabold text-gray-800 mb-3 flex items-center">
+                        <span class="relative flex h-3 w-3 mr-3 shrink-0">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
+                        </span>
+                        <span class="lang-en">Live Govt. Prices (MSP)</span><span class="lang-hi">लाइव सरकारी भाव (MSP)</span>
+                        <span class="lang-mr">थेट सरकारी दर (MSP)</span><span class="lang-pa">ਲਾਈਵ ਸਰਕਾਰੀ ਕੀਮਤਾਂ (MSP)</span>
+                        <span class="lang-ta">நேரடி அரசு விலை (MSP)</span><span class="lang-ml">തത്സമയ സർക്കാർ വിലകൾ (MSP)</span>
+                        <span class="lang-as">লাইভ চৰকাৰী মূল্য (MSP)</span><span class="lang-bn">লাইভ সরকারি দাম (MSP)</span>
+                    </h3>
+                    
+                    <div class="flex overflow-x-auto space-x-4 pb-2 snap-x hide-scrollbar">
+                        
+                        <div class="snap-start shrink-0 w-36 sm:w-44 bg-white border border-gray-200 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                            <div class="absolute top-0 right-0 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg shadow-sm"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                            <p class="text-sm text-gray-500 font-bold mb-1">
+                                <span class="lang-en">Wheat</span><span class="lang-hi">गेहूँ</span>
+                                <span class="lang-mr">गहू</span><span class="lang-pa">ਕਣਕ</span>
+                                <span class="lang-ta">கோதுமை</span><span class="lang-ml">ഗോതമ്പ്</span>
+                                <span class="lang-as">ঘেঁহু</span><span class="lang-bn">গম</span>
+                            </p>
+                            <h4 class="text-xl sm:text-2xl font-black text-gray-900">₹ 2,425 <span class="text-xs text-gray-500 font-normal">/ Qtl</span></h4>
+                        </div>
+                        
+                        <div class="snap-start shrink-0 w-36 sm:w-44 bg-white border border-gray-200 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                            <div class="absolute top-0 right-0 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg shadow-sm"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                            <p class="text-sm text-gray-500 font-bold mb-1">
+                                <span class="lang-en">Soyabean</span><span class="lang-hi">सोयाबीन</span>
+                                <span class="lang-mr">सोयाबीन</span><span class="lang-pa">ਸੋਇਆਬੀਨ</span>
+                                <span class="lang-ta">சோயாபீன்</span><span class="lang-ml">സോയാബീൻ</span>
+                                <span class="lang-as">চয়াবিন</span><span class="lang-bn">সয়াবিন</span>
+                            </p>
+                            <h4 class="text-xl sm:text-2xl font-black text-gray-900">₹ 4,892 <span class="text-xs text-gray-500 font-normal">/ Qtl</span></h4>
+                        </div>
+                        
+                        <div class="snap-start shrink-0 w-36 sm:w-44 bg-white border border-gray-200 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                            <div class="absolute top-0 right-0 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg shadow-sm"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                            <p class="text-sm text-gray-500 font-bold mb-1">
+                                <span class="lang-en">Paddy</span><span class="lang-hi">धान</span>
+                                <span class="lang-mr">भात</span><span class="lang-pa">ਝੋਨਾ</span>
+                                <span class="lang-ta">நெல்</span><span class="lang-ml">നെല്ല്</span>
+                                <span class="lang-as">ধান</span><span class="lang-bn">ধান</span>
+                            </p>
+                            <h4 class="text-xl sm:text-2xl font-black text-gray-900">₹ 2,400 <span class="text-xs text-gray-500 font-normal">/ Qtl</span></h4>
+                        </div>
+
+                        <div class="snap-start shrink-0 w-36 sm:w-44 bg-white border border-gray-200 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                            <div class="absolute top-0 right-0 bg-gray-400 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg shadow-sm"><i class="fa-solid fa-minus"></i></div>
+                            <p class="text-sm text-gray-500 font-bold mb-1">
+                                <span class="lang-en">Mustard</span><span class="lang-hi">सरसों</span>
+                                <span class="lang-mr">मोहरी</span><span class="lang-pa">ਸਰ੍ਹੋਂ</span>
+                                <span class="lang-ta">கடுகு</span><span class="lang-ml">കടുക്</span>
+                                <span class="lang-as">সৰিয়হ</span><span class="lang-bn">সর্ষে</span>
+                            </p>
+                            <h4 class="text-xl sm:text-2xl font-black text-gray-900">₹ 5,650 <span class="text-xs text-gray-500 font-normal">/ Qtl</span></h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== CROP DETAILS ==================== -->
+                <div>
+                    <h3 class="text-xl font-extrabold text-gray-800 mb-4 flex items-center">
+                        <i class="fa-solid fa-seedling text-green-600 mr-2 text-2xl"></i>
+                        <span class="lang-en">My Registered Crops</span><span class="lang-hi">मेरी पंजीकृत फसलें</span>
+                        <span class="lang-mr">माझी नोंदणीकृत पिके</span><span class="lang-pa">ਮੇਰੀਆਂ ਰਜਿਸਟਰਡ ਫਸਲਾਂ</span>
+                        <span class="lang-ta">எனது பதிவு செய்யப்பட்ட பயிர்கள்</span><span class="lang-ml">രജിസ്റ്റർ ചെയ്ത വിളകൾ</span>
+                        <span class="lang-as">মোৰ পঞ্জীয়নভুক্ত শস্য</span><span class="lang-bn">আমার নিবন্ধিত ফসল</span>
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-5 shadow-sm">
+                            <div class="flex justify-between items-center mb-3">
+                                <div class="bg-white p-3 rounded-full shadow"><i class="fa-solid fa-wheat-awn text-yellow-600 text-3xl"></i></div>
+                                <span class="text-sm bg-yellow-200 text-yellow-800 px-3 py-1.5 rounded-lg font-extrabold">Rabi</span>
+                            </div>
+                            <h4 class="font-extrabold text-2xl text-gray-800">
+                                <span class="lang-en">Wheat</span><span class="lang-hi">गेहूँ</span>
+                                <span class="lang-mr">गहू</span><span class="lang-pa">ਕਣਕ</span>
+                                <span class="lang-ta">கோதுமை</span><span class="lang-ml">ഗോതമ്പ്</span>
+                                <span class="lang-as">ঘেঁহু</span><span class="lang-bn">গম</span>
+                            </h4>
+                            <p class="text-lg text-gray-700 font-bold mt-1">
+                                <span class="lang-en">Estimate: 50 Quintals</span><span class="lang-hi">अनुमान: 50 क्विंटल</span>
+                                <span class="lang-mr">अंदाज: 50 क्विंटल</span><span class="lang-pa">ਅੰਦਾਜ਼ਾ: 50 ਕੁਇੰਟਲ</span>
+                                <span class="lang-ta">மதிப்பீடு: 50 குவிண்டால்</span><span class="lang-ml">എസ്റ്റിമേറ്റ്: 50 ക്വിന്റൽ</span>
+                                <span class="lang-as">অনুমান: 50 কুইন্টল</span><span class="lang-bn">অনুমান: 50 কুইন্টাল</span>
+                            </p>
+                        </div>
+                        <div class="bg-green-50 border-2 border-green-300 rounded-2xl p-5 shadow-sm">
+                            <div class="flex justify-between items-center mb-3">
+                                <div class="bg-white p-3 rounded-full shadow"><i class="fa-solid fa-leaf text-green-600 text-3xl"></i></div>
+                                <span class="text-sm bg-green-200 text-green-800 px-3 py-1.5 rounded-lg font-extrabold">Kharif</span>
+                            </div>
+                            <h4 class="font-extrabold text-2xl text-gray-800">
+                                <span class="lang-en">Soyabean</span><span class="lang-hi">सोयाबीन</span>
+                                <span class="lang-mr">सोयाबीन</span><span class="lang-pa">ਸੋਇਆਬੀਨ</span>
+                                <span class="lang-ta">சோயாபீன்</span><span class="lang-ml">സോയാബീൻ</span>
+                                <span class="lang-as">চয়াবিন</span><span class="lang-bn">সয়াবিন</span>
+                            </h4>
+                            <p class="text-lg text-gray-700 font-bold mt-1">
+                                <span class="lang-en">Estimate: 30 Quintals</span><span class="lang-hi">अनुमान: 30 क्विंटल</span>
+                                <span class="lang-mr">अंदाज: 30 क्विंटल</span><span class="lang-pa">ਅੰਦਾਜ਼ਾ: 30 ਕੁਇੰਟਲ</span>
+                                <span class="lang-ta">மதிப்பீடு: 30 குவிண்டால்</span><span class="lang-ml">എസ്റ്റിമേറ്റ്: 30 ക്വിന്റൽ</span>
+                                <span class="lang-as">অনুমান: 30 কুইন্টল</span><span class="lang-bn">অনুমান: 30 কুইন্টাল</span>
+                            </p>
+                        </div>
+                        <div class="bg-blue-50 border-2 border-blue-300 rounded-2xl p-5 shadow-sm">
+                            <div class="flex justify-between items-center mb-3">
+                                <div class="bg-white p-3 rounded-full shadow"><i class="fa-solid fa-bowl-rice text-blue-600 text-3xl"></i></div>
+                                <span class="text-sm bg-blue-200 text-blue-800 px-3 py-1.5 rounded-lg font-extrabold">Kharif</span>
+                            </div>
+                            <h4 class="font-extrabold text-2xl text-gray-800">
+                                <span class="lang-en">Paddy (Rice)</span><span class="lang-hi">धान</span>
+                                <span class="lang-mr">भात</span><span class="lang-pa">ਝੋਨਾ</span>
+                                <span class="lang-ta">நெல்</span><span class="lang-ml">നെല്ല്</span>
+                                <span class="lang-as">ধান</span><span class="lang-bn">ধান</span>
+                            </h4>
+                            <p class="text-lg text-gray-700 font-bold mt-1">
+                                <span class="lang-en">Estimate: 40 Quintals</span><span class="lang-hi">अनुमान: 40 क्विंटल</span>
+                                <span class="lang-mr">अंदाज: 40 क्विंटल</span><span class="lang-pa">ਅੰਦਾਜ਼ਾ: 40 ਕੁਇੰਟਲ</span>
+                                <span class="lang-ta">மதிப்பீடு: 40 குவிண்டால்</span><span class="lang-ml">എസ്റ്റിമേറ്റ്: 40 ക്വിന്റൽ</span>
+                                <span class="lang-as">অনুমান: 40 কুইন্টল</span><span class="lang-bn">অনুমান: 40 কুইন্টাল</span>
+                            </p>
+                        </div>
+                        <div class="bg-orange-50 border-2 border-orange-300 rounded-2xl p-5 shadow-sm">
+                            <div class="flex justify-between items-center mb-3">
+                                <div class="bg-white p-3 rounded-full shadow"><i class="fa-brands fa-pagelines text-orange-600 text-3xl"></i></div>
+                                <span class="text-sm bg-orange-200 text-orange-800 px-3 py-1.5 rounded-lg font-extrabold">Rabi</span>
+                            </div>
+                            <h4 class="font-extrabold text-2xl text-gray-800">
+                                <span class="lang-en">Mustard</span><span class="lang-hi">सरसों</span>
+                                <span class="lang-mr">मोहरी</span><span class="lang-pa">ਸਰ੍ਹੋਂ</span>
+                                <span class="lang-ta">கடுகு</span><span class="lang-ml">കടുക്</span>
+                                <span class="lang-as">সৰিয়হ</span><span class="lang-bn">সর্ষে</span>
+                            </h4>
+                            <p class="text-lg text-gray-700 font-bold mt-1">
+                                <span class="lang-en">Estimate: 20 Quintals</span><span class="lang-hi">अनुमान: 20 क्विंटल</span>
+                                <span class="lang-mr">अंदाज: 20 क्विंटल</span><span class="lang-pa">ਅੰਦਾਜ਼ਾ: 20 ਕੁਇੰਟਲ</span>
+                                <span class="lang-ta">மதிப்பீடு: 20 குவிண்டால்</span><span class="lang-ml">എസ്റ്റിമേറ്റ്: 20 ക്വിന്റൽ</span>
+                                <span class="lang-as">অনুমান: 20 কুইন্টল</span><span class="lang-bn">অনুমান: 20 কুইন্টাল</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== LIVE STATUS TRACKING ==================== -->
+                <div id="trackingContainer" class="scroll-mt-32 transition-all duration-500 rounded-3xl">
+                    <h3 class="text-xl font-extrabold text-gray-800 mb-4 flex items-center">
+                        <i class="fa-solid fa-location-crosshairs text-red-500 mr-2 text-2xl"></i>
+                        <span class="lang-en">Live Status (Lot #4092)</span><span class="lang-hi">लाइव स्थिति (लॉट #4092)</span>
+                        <span class="lang-mr">थेट स्थिती (लॉट #4092)</span><span class="lang-pa">ਲਾਈਵ ਸਥਿਤੀ (ਲਾਟ #4092)</span>
+                        <span class="lang-ta">நேரடி நிலை (லாட் #4092)</span><span class="lang-ml">തത്സമയ അവസ്ഥ (ലോട്ട് #4092)</span>
+                        <span class="lang-as">লাইভ স্থিতি (লট #4092)</span><span class="lang-bn">লাইভ স্ট্যাটাস (লট #4092)</span>
+                    </h3>
+                    <div id="trackingCard" class="bg-white rounded-3xl p-6 shadow-md border-2 border-gray-200">
+                        <div class="flex items-center mb-8 mt-2 px-2 w-full">
+                            <div class="bg-green-500 text-white rounded-full h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center font-bold z-10 shadow-lg text-xl shrink-0"><i class="fa-solid fa-check"></i></div>
+                            <div class="flex-1 h-3 bg-green-500 -ml-2 rounded-r"></div>
+                            <div class="bg-blue-600 text-white rounded-full h-12 w-12 sm:h-14 sm:w-14 flex items-center justify-center font-bold z-10 ring-8 ring-blue-100 shadow-xl text-2xl shrink-0"><i class="fa-solid fa-microscope"></i></div>
+                            <div class="flex-1 h-3 bg-gray-200 -ml-2 rounded-l"></div>
+                            <div class="bg-gray-200 text-gray-500 rounded-full h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center font-bold z-10 text-xl shadow-inner shrink-0">3</div>
+                            <div class="flex-1 h-3 bg-gray-200 -ml-2"></div>
+                            <div class="bg-gray-200 text-gray-500 rounded-full h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center font-bold z-10 text-xl shadow-inner shrink-0">4</div>
+                        </div>
+                        
+                        <div class="grid grid-cols-4 text-center text-xs sm:text-sm font-extrabold text-gray-500">
+                            <div class="text-green-600">
+                                <span class="lang-en">Registered</span><span class="lang-hi">पंजीकृत</span><span class="lang-mr">नोंदणीकृत</span><span class="lang-pa">ਰਜਿਸਟਰਡ</span>
+                                <span class="lang-ta">பதிவு</span><span class="lang-ml">രജിസ്റ്റർ ചെയ്തു</span><span class="lang-as">পঞ্জীয়নভুক্ত</span><span class="lang-bn">নিবন্ধিত</span>
+                            </div>
+                            <div class="text-blue-700">
+                                <span class="lang-en">Mandi Check</span><span class="lang-hi">मंडी जाँच</span><span class="lang-mr">मंडी तपासणी</span><span class="lang-pa">ਮੰਡੀ ਜਾਂਚ</span>
+                                <span class="lang-ta">மண்டி சோதனை</span><span class="lang-ml">മണ്ടി പരിശോധന</span><span class="lang-as">মাণ্ডি পৰীক্ষা</span><span class="lang-bn">মান্ডি পরীক্ষা</span>
+                            </div>
+                            <div>
+                                <span class="lang-en">Accepted</span><span class="lang-hi">स्वीकृत</span><span class="lang-mr">स्वीकारले</span><span class="lang-pa">ਮਨਜ਼ੂਰ</span>
+                                <span class="lang-ta">ஏற்கப்பட்டது</span><span class="lang-ml">സ്വീകരിച്ചു</span><span class="lang-as">গ্ৰহণ</span><span class="lang-bn">গৃহীত</span>
+                            </div>
+                            <div>
+                                <span class="lang-en">Paid</span><span class="lang-hi">भुगतान</span><span class="lang-mr">पैसे दिले</span><span class="lang-pa">ਭੁਗਤਾਨ ਕੀਤਾ</span>
+                                <span class="lang-ta">செலுத்தப்பட்டது</span><span class="lang-ml">പണം നൽകി</span><span class="lang-as">পৰিশোধ</span><span class="lang-bn">পরিশোধিত</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 p-4 bg-blue-50 rounded-2xl border-2 border-blue-200 flex items-center space-x-4 shadow-sm">
+                            <div class="bg-blue-600 text-white p-3 rounded-full shrink-0"><i class="fa-solid fa-circle-info text-xl"></i></div>
+                            <p class="text-sm sm:text-base text-blue-900 font-bold leading-relaxed">
+                                <span class="lang-en">Your crop is currently at the Mandi for quality check. We will SMS you once it is accepted.</span>
+                                <span class="lang-hi">आपकी फसल मंडी में जाँच के लिए है। पास होते ही हम आपको SMS करेंगे।</span>
+                                <span class="lang-mr">तुमचे पीक सध्या मंडीत गुणवत्तेच्या तपासणीसाठी आहे. ते स्वीकारल्यावर आम्ही तुम्हाला SMS करू.</span>
+                                <span class="lang-pa">ਤੁਹਾਡੀ ਫਸਲ ਇਸ ਸਮੇਂ ਮੰਡੀ ਵਿੱਚ ਜਾਂਚ ਲਈ ਹੈ। ਅਸੀਂ ਤੁਹਾਨੂੰ ਮਨਜ਼ੂਰ ਹੋਣ 'ਤੇ SMS ਕਰਾਂਗੇ।</span>
+                                <span class="lang-ta">உங்கள் பயிர் தற்போது தர பரிசோதனைக்காக மண்டியில் உள்ளது. அது ஏற்றுக்கொள்ளப்பட்டதும் SMS அனுப்புவோம்.</span>
+                                <span class="lang-ml">നിങ്ങളുടെ വിള നിലവിൽ ഗുണനിലവാര പരിശോധനയ്ക്കായി മണ്ടിയിലാണ്. അത് സ്വീകരിച്ചുകഴിഞ്ഞാൽ ഞങ്ങൾ SMS ചെയ്യും.</span>
+                                <span class="lang-as">আপোনাৰ শস্য বৰ্তমান গুণগত মানৰ পৰীক্ষাৰ বাবে মাণ্ডিত আছে। গ্ৰহণ কৰাৰ পিছত আমি SMS কৰিম।</span>
+                                <span class="lang-bn">আপনার ফসল বর্তমানে গুণমান পরীক্ষার জন্য মান্ডিতে আছে। এটি গৃহীত হলে আমরা আপনাকে SMS করব।</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- ==================== BOOKING MODAL ==================== -->
+        <div id="bookingModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-end sm:items-center justify-center z-50">
+            <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-lg h-[85vh] flex flex-col">
+                <div class="bg-green-600 px-6 py-4 flex justify-between items-center text-white shrink-0 shadow-md sm:rounded-t-3xl">
+                    <h3 class="font-extrabold text-2xl">
+                        <span class="lang-en">Book Mandi Slot</span><span class="lang-hi">मंडी स्लॉट बुक करें</span>
+                        <span class="lang-mr">मंडी स्लॉट बुक करा</span><span class="lang-pa">ਮੰਡੀ ਸਲਾਟ ਬੁੱਕ ਕਰੋ</span>
+                        <span class="lang-ta">மண்டி ஸ்லாட்டை முன்பதிவு செய்</span><span class="lang-ml">മണ്ടി സ്ലോട്ട് ബുക്ക് ചെയ്യുക</span>
+                        <span class="lang-as">মাণ্ডি স্লট বুক কৰক</span><span class="lang-bn">মান্ডি স্লট বুক করুন</span>
+                    </h3>
+                    <label for="state-none" class="text-white bg-green-700 hover:bg-green-800 w-10 h-10 rounded-full flex items-center justify-center transition cursor-pointer">
+                        <i class="fa-solid fa-xmark text-2xl"></i>
+                    </label>
+                </div>
+                
+                <div class="p-6 overflow-y-auto flex-1 bg-white space-y-6">
+                    <!-- Dropdown Fix: Individual selects wrapped in language classes -->
+                    <div>
+                        <label class="block text-lg font-extrabold text-gray-800 mb-2">
+                            <span class="lang-en">1. Which crop to sell?</span><span class="lang-hi">1. कौन सी फसल बेचनी है?</span>
+                            <span class="lang-mr">1. कोणते पीक विकायचे?</span><span class="lang-pa">1. ਕਿਹੜੀ ਫਸਲ ਵੇਚਣੀ ਹੈ?</span>
+                            <span class="lang-ta">1. எந்த பயிரை விற்க வேண்டும்?</span><span class="lang-ml">1. ഏത് വിള വിൽക്കണം?</span>
+                            <span class="lang-as">1. কোনটো শস্য বিক্ৰী কৰিব?</span><span class="lang-bn">1. কোন ফসল বিক্রি করবেন?</span>
+                        </label>
+                        
+                        <div class="lang-en w-full">
+                            <select class="w-full border-2 border-gray-300 rounded-2xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>Wheat - 50 Qtl</option><option>Soyabean - 30 Qtl</option><option>Paddy - 40 Qtl</option><option>Mustard - 20 Qtl</option></select>
+                        </div>
+                        <div class="lang-hi w-full">
+                            <select class="w-full border-2 border-gray-300 rounded-2xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>गेहूँ - 50 क्विंटल</option><option>सोयाबीन - 30 क्विंटल</option><option>धान - 40 क्विंटल</option><option>सरसों - 20 क्विंटल</option></select>
+                        </div>
+                        <div class="lang-mr w-full">
+                            <select class="w-full border-2 border-gray-300 rounded-2xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>गहू - 50 क्विंटल</option><option>सोयाबीन - 30 क्विंटल</option><option>भात - 40 क्विंटल</option><option>मोहरी - 20 क्विंटल</option></select>
+                        </div>
+                        <div class="lang-pa w-full">
+                            <select class="w-full border-2 border-gray-300 rounded-2xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>ਕਣਕ - 50 ਕੁਇੰਟਲ</option><option>ਸੋਇਆਬੀਨ - 30 ਕੁਇੰਟਲ</option><option>ਝੋਨਾ - 40 ਕੁਇੰਟਲ</option><option>ਸਰ੍ਹੋਂ - 20 ਕੁਇੰਟਲ</option></select>
+                        </div>
+                        <div class="lang-ta w-full">
+                            <select class="w-full border-2 border-gray-300 rounded-2xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>கோதுமை - 50 குவிண்டால்</option><option>சோயாபீன் - 30 குவிண்டால்</option><option>நெல் - 40 குவிண்டால்</option><option>கடுகு - 20 குவிண்டால்</option></select>
+                        </div>
+                        <div class="lang-ml w-full">
+                            <select class="w-full border-2 border-gray-300 rounded-2xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>ഗോതമ്പ് - 50 ക്വിന്റൽ</option><option>സോയാബീൻ - 30 ക്വിന്റൽ</option><option>നെല്ല് - 40 ക്വിന്റൽ</option><option>കടുക് - 20 ക്വിന്റൽ</option></select>
+                        </div>
+                        <div class="lang-as w-full">
+                            <select class="w-full border-2 border-gray-300 rounded-2xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>ঘেঁহু - 50 কুইন্টল</option><option>চয়াবিন - 30 কুইন্টল</option><option>ধান - 40 কুইন্টল</option><option>সৰিয়হ - 20 কুইন্টল</option></select>
+                        </div>
+                        <div class="lang-bn w-full">
+                            <select class="w-full border-2 border-gray-300 rounded-2xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>গম - 50 কুইন্টাল</option><option>সয়াবিন - 30 কুইন্টাল</option><option>ধান - 40 কুইন্টাল</option><option>সর্ষে - 20 কুইন্টাল</option></select>
+                        </div>
+                    </div>
+
+                    <!-- Mandi Location Translation Fix -->
+                    <div>
+                        <label class="block text-lg font-extrabold text-gray-800 mb-2 flex justify-between items-center">
+                            <span>
+                                <span class="lang-en">2. Choose Mandi</span><span class="lang-hi">2. मंडी चुनें</span>
+                                <span class="lang-mr">2. मंडी निवडा</span><span class="lang-pa">2. ਮੰਡੀ ਚੁਣੋ</span>
+                                <span class="lang-ta">2. மண்டியைத் தேர்ந்தெடு</span><span class="lang-ml">2. മണ്ടി തിരഞ്ഞെടുക്കുക</span>
+                                <span class="lang-as">2. মাণ্ডি বাছক</span><span class="lang-bn">2. মান্ডি বেছে নিন</span>
+                            </span>
+                            <span class="text-green-600 text-xs sm:text-sm font-bold bg-green-100 px-2 py-1 rounded">
+                                <span class="lang-en">GPS Active</span><span class="lang-hi">GPS सक्रिय</span>
+                                <span class="lang-mr">GPS सक्रिय</span><span class="lang-pa">GPS ਸਰਗਰਮ</span>
+                                <span class="lang-ta">GPS செயலில் உள்ளது</span><span class="lang-ml">GPS സജീവം</span>
+                                <span class="lang-as">GPS সক্ৰিয়</span><span class="lang-bn">GPS সক্রিয়</span>
+                            </span>
+                        </label>
+                        <div class="space-y-3">
+                            <input type="radio" id="centre1" name="centre" checked class="hidden">
+                            <label for="centre1" class="flex items-center p-4 border-2 border-gray-200 bg-white rounded-2xl cursor-pointer transition shadow-sm select-none">
+                                <div class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center mr-4 radio-outer bg-white shrink-0">
+                                    <div class="w-3 h-3 bg-green-600 rounded-full radio-inner hidden"></div>
+                                </div>
+                                <div>
+                                    <p class="font-extrabold text-lg text-gray-900">
+                                        <span class="lang-en">Karond Mandi, Bhopal</span><span class="lang-hi">करोंद मंडी, भोपाल</span>
+                                        <span class="lang-mr">करोद मंडी, भोपाळ</span><span class="lang-pa">ਕਰੋਂਦ ਮੰਡੀ, ਭੋਪਾਲ</span>
+                                        <span class="lang-ta">கரோண்ட் மண்டி, போபால்</span><span class="lang-ml">കരോണ്ട് മണ്ടി, ഭോപ്പാൽ</span>
+                                        <span class="lang-as">কৰোন্দ মাণ্ডি, ভোপাল</span><span class="lang-bn">করোন্দ মান্ডি, ভোপাল</span>
+                                    </p>
+                                    <p class="text-sm text-green-700 font-bold mt-1"><i class="fa-solid fa-route mr-1"></i> 4.2 km • 
+                                        <span class="lang-en">Open Now</span><span class="lang-hi">अभी खुला है</span>
+                                        <span class="lang-mr">आता सुरू आहे</span><span class="lang-pa">ਹੁਣ ਖੁੱਲ੍ਹਾ ਹੈ</span>
+                                        <span class="lang-ta">திறந்துள்ளது</span><span class="lang-ml">ഇപ്പോൾ തുറന്നിരിക്കുന്നു</span>
+                                        <span class="lang-as">এতিয়া খোলা আছে</span><span class="lang-bn">এখন খোলা আছে</span>
+                                    </p>
+                                </div>
+                            </label>
+
+                            <input type="radio" id="centre2" name="centre" class="hidden">
+                            <label for="centre2" class="flex items-center p-4 border-2 border-gray-200 bg-white rounded-2xl cursor-pointer transition shadow-sm select-none">
+                                <div class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center mr-4 radio-outer bg-white shrink-0">
+                                    <div class="w-3 h-3 bg-green-600 rounded-full radio-inner hidden"></div>
+                                </div>
+                                <div>
+                                    <p class="font-extrabold text-lg text-gray-900">
+                                        <span class="lang-en">Sehore Mandi</span><span class="lang-hi">सीहोर मंडी</span>
+                                        <span class="lang-mr">सिहोर मंडी</span><span class="lang-pa">ਸੀਹੋਰ ਮੰਡੀ</span>
+                                        <span class="lang-ta">சிஹோர் மண்டி</span><span class="lang-ml">സിഹോർ മണ്ടി</span>
+                                        <span class="lang-as">চিহোৰ মাণ্ডি</span><span class="lang-bn">সিহোর মান্ডি</span>
+                                    </p>
+                                    <p class="text-sm text-gray-500 font-bold mt-1"><i class="fa-solid fa-route mr-1"></i> 35.0 km • 
+                                        <span class="lang-en">High Traffic</span><span class="lang-hi">अधिक भीड़</span>
+                                        <span class="lang-mr">जास्त गर्दी</span><span class="lang-pa">ਵੱਧ ਭੀੜ</span>
+                                        <span class="lang-ta">அதிக கூட்டம்</span><span class="lang-ml">കൂടുതൽ തിരക്ക്</span>
+                                        <span class="lang-as">অধিক ভিৰ</span><span class="lang-bn">বেশি ভিড়</span>
+                                    </p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-lg font-extrabold text-gray-800 mb-2">
+                            <span class="lang-en">3. Select Date & Time</span><span class="lang-hi">3. तारीख और समय चुनें</span>
+                            <span class="lang-mr">3. तारीख आणि वेळ निवडा</span><span class="lang-pa">3. ਤਾਰੀਖ ਅਤੇ ਸਮਾਂ ਚੁਣੋ</span>
+                            <span class="lang-ta">3. தேதி மற்றும் நேரத்தைத் தேர்ந்தெடு</span><span class="lang-ml">3. തീയതിയും സമയവും തിരഞ്ഞെടുക്കുക</span>
+                            <span class="lang-as">3. তাৰিখ আৰু সময় বাছক</span><span class="lang-bn">3. তারিখ এবং সময় বেছে নিন</span>
+                        </label>
+                        <input type="date" value="2027-05-16" min="2027-05-16" class="w-full border-2 border-gray-300 rounded-2xl p-4 text-lg font-bold outline-none focus:border-green-500 text-gray-800 bg-white shadow-sm mb-4">
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <input type="radio" id="slot1" name="slot" class="hidden">
+                            <label for="slot1" class="block border-2 border-green-500 text-green-700 bg-green-50 rounded-2xl py-4 text-center text-lg font-extrabold hover:bg-green-100 transition shadow-sm cursor-pointer select-none">09:00 AM</label>
+                            
+                            <input type="radio" id="slot2" name="slot" disabled class="hidden">
+                            <label for="slot2" class="block border-2 border-red-200 text-red-500 bg-red-50 rounded-2xl py-3 text-center text-lg font-extrabold opacity-70 cursor-not-allowed select-none">
+                                10:00 AM <span class="block text-xs text-red-600 mt-0.5 uppercase">
+                                    <span class="lang-en">Full</span><span class="lang-hi">फुल</span>
+                                    <span class="lang-mr">पूर्ण</span><span class="lang-pa">ਭਰਿਆ</span>
+                                    <span class="lang-ta">முழுவதும்</span><span class="lang-ml">നിറഞ്ഞു</span>
+                                    <span class="lang-as">পূৰ্ণ</span><span class="lang-bn">পূর্ণ</span>
+                                </span>
+                            </label>
+                            
+                            <input type="radio" id="slot3" name="slot" class="hidden">
+                            <label for="slot3" class="block border-2 border-green-500 text-green-700 bg-green-50 rounded-2xl py-4 text-center text-lg font-extrabold hover:bg-green-100 transition shadow-sm cursor-pointer select-none">11:30 AM</label>
+                            
+                            <input type="radio" id="slot4" name="slot" checked class="hidden">
+                            <label for="slot4" class="block border-2 border-green-500 text-green-700 bg-green-50 rounded-2xl py-4 text-center text-lg font-extrabold hover:bg-green-100 transition shadow-sm cursor-pointer select-none">01:00 PM</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-5 border-t border-gray-200 bg-white shrink-0">
+                    <label for="state-confirm" class="block w-full bg-green-600 text-white text-center font-extrabold text-2xl py-5 rounded-2xl hover:bg-green-700 shadow-xl transition active:scale-95 cursor-pointer">
+                        <span class="lang-en">Confirm Slot</span><span class="lang-hi">स्लॉट पक्का करें</span>
+                        <span class="lang-mr">स्लॉट निश्चित करा</span><span class="lang-pa">ਸਲਾਟ ਪੱਕਾ ਕਰੋ</span>
+                        <span class="lang-ta">ஸ்லாட்டை உறுதிப்படுத்து</span><span class="lang-ml">സ്ലോട്ട് ഉറപ്പാക്കുക</span>
+                        <span class="lang-as">স্লট নিশ্চিত কৰক</span><span class="lang-bn">স্লট নিশ্চিত করুন</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== CONFIRM MODAL ==================== -->
+        <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-end sm:items-center justify-center z-50">
+            <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-sm flex flex-col overflow-hidden text-center mx-auto mb-0 sm:mb-20">
+                <div class="p-8 pb-6">
+                    <div class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fa-solid fa-check text-5xl"></i>
+                    </div>
+                    <h3 class="font-extrabold text-3xl text-gray-800 mb-2">
+                        <span class="lang-en">Booking Confirmed</span><span class="lang-hi">बुकिंग सफल</span>
+                        <span class="lang-mr">बुकिंग यशस्वी</span><span class="lang-pa">ਬੁਕਿੰਗ ਸਫਲ</span>
+                        <span class="lang-ta">முன்பதிவு உறுதி செய்யப்பட்டது</span><span class="lang-ml">ബുക്കിംഗ് വിജയകരം</span>
+                        <span class="lang-as">বুকিং সফল</span><span class="lang-bn">বুকিং সফল</span>
+                    </h3>
+                    <p class="text-gray-500 font-bold mb-6">
+                        <span class="lang-en">Your procurement slot is ready.</span><span class="lang-hi">आपका मंडी स्लॉट तैयार है।</span>
+                        <span class="lang-mr">तुमचा मंडी स्लॉट तयार आहे.</span><span class="lang-pa">ਤੁਹਾਡਾ ਮੰਡੀ ਸਲਾਟ ਤਿਆਰ ਹੈ।</span>
+                        <span class="lang-ta">உங்கள் மண்டி ஸ்லாட் தயார்.</span><span class="lang-ml">നിങ്ങളുടെ മണ്ടി സ്ലോട്ട് തയ്യാറാണ്.</span>
+                        <span class="lang-as">আপোনাৰ মাণ্ডি স্লট সাজু।</span><span class="lang-bn">আপনার মান্ডি স্লট প্রস্তুত।</span>
+                    </p>
+                    
+                    <div class="bg-gray-50 border-2 border-dashed border-green-400 rounded-2xl p-5 mb-6 text-left shadow-sm">
+                        <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Unique Booking ID</p>
+                        <h2 class="text-2xl font-black text-green-700 tracking-wide">BKG-9842-MP</h2>
+                        <div class="mt-3 pt-3 border-t border-gray-200 flex justify-between text-sm font-bold text-gray-700">
+                            <span>16-05-2027</span>
+                            <span>01:00 PM</span>
+                        </div>
+                    </div>
+                    
+                    <label for="state-none" class="block w-full bg-green-600 text-white font-extrabold text-xl py-4 rounded-xl hover:bg-green-700 shadow-lg transition active:scale-95 cursor-pointer">
+                        <span class="lang-en">Back to Dashboard</span><span class="lang-hi">डैशबोर्ड पर वापस जाएं</span>
+                        <span class="lang-mr">डॅशबोर्डवर परत जा</span><span class="lang-pa">ਡੈਸ਼ਬੋਰਡ 'ਤੇ ਵਾਪਸ ਜਾਓ</span>
+                        <span class="lang-ta">டாஷ்போர்டுக்குத் திரும்பு</span><span class="lang-ml">ഡാഷ്‌ബോർഡിലേക്ക് മടങ്ങുക</span>
+                        <span class="lang-as">ডেচবৰ্ডলৈ উভতি যাওক</span><span class="lang-bn">ড্যাশবোর্ডে ফিরে যান</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== PAYMENT MODAL ==================== -->
+        <div id="paymentModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-end sm:items-center justify-center z-50">
+            <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-lg h-[80vh] sm:h-auto sm:max-h-[85vh] flex flex-col">
+                <div class="bg-blue-600 px-6 py-4 flex justify-between items-center text-white shrink-0 shadow-md sm:rounded-t-3xl">
+                    <h3 class="font-extrabold text-2xl">
+                        <span class="lang-en">Bank & Payments</span><span class="lang-hi">बैंक और भुगतान</span>
+                        <span class="lang-mr">बँक आणि पेमेंट</span><span class="lang-pa">ਬੈਂਕ ਅਤੇ ਭੁਗਤਾਨ</span>
+                        <span class="lang-ta">வங்கி மற்றும் கொடுப்பனவுகள்</span><span class="lang-ml">ബാങ്കും പേയ്‌മെന്റുകളും</span>
+                        <span class="lang-as">বেংক আৰু পেমেন্ট</span><span class="lang-bn">ব্যাংক এবং পেমেন্ট</span>
+                    </h3>
+                    <label for="state-none" class="text-white bg-blue-700 hover:bg-blue-800 w-10 h-10 rounded-full flex items-center justify-center transition cursor-pointer">
+                        <i class="fa-solid fa-xmark text-2xl"></i>
+                    </label>
+                </div>
+                
+                <div class="p-6 bg-gray-50 overflow-y-auto flex-1">
+                    <div class="bg-white border-2 border-green-200 rounded-3xl p-6 mb-6 text-center shadow-md relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-2 bg-green-500"></div>
+                        <p class="text-sm text-gray-500 font-bold mb-2 uppercase tracking-wide">
+                            <span class="lang-en">Total Earned (2026)</span><span class="lang-hi">कुल कमाई (2026)</span>
+                            <span class="lang-mr">एकूण कमाई (2026)</span><span class="lang-pa">ਕੁੱਲ ਕਮਾਈ (2026)</span>
+                            <span class="lang-ta">மொத்த வருமானம் (2026)</span><span class="lang-ml">ആകെ വരുമാനം (2026)</span>
+                            <span class="lang-as">মুঠ উপাৰ্জন (2026)</span><span class="lang-bn">মোট আয় (2026)</span>
+                        </p>
+                        <h2 class="text-4xl font-black text-gray-900 mb-3 text-green-700">₹ 1,45,000</h2>
+                        <div class="inline-flex items-center bg-gray-100 text-gray-700 px-4 py-2 rounded-xl text-base font-bold border border-gray-200">
+                            <i class="fa-solid fa-building-columns mr-2 text-blue-600"></i> SBI Bank •••• 3412
+                        </div>
+                    </div>
+                    
+                    <h4 class="font-extrabold text-gray-800 mb-4 text-lg">
+                        <span class="lang-en">Recent Settlements</span><span class="lang-hi">हाल के लेनदेन</span>
+                        <span class="lang-mr">अलीकडील व्यवहार</span><span class="lang-pa">ਤਾਜ਼ਾ ਲੈਣ-ਦੇਣ</span>
+                        <span class="lang-ta">சமீபத்திய பரிவர்த்தனைகள்</span><span class="lang-ml">സമീപകാല ഇടപാടുകൾ</span>
+                        <span class="lang-as">শেহতীয়া লেনদেন</span><span class="lang-bn">সাম্প্রতিক লেনদেন</span>
+                    </h4>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-4 bg-white border-2 border-yellow-200 rounded-2xl shadow-sm">
+                            <div class="flex items-center space-x-4">
+                                <div class="bg-yellow-100 p-3 rounded-full text-yellow-600 shrink-0"><i class="fa-solid fa-clock text-xl"></i></div>
+                                <div>
+                                    <p class="font-extrabold text-lg text-gray-900">Lot #4092 - Wheat</p>
+                                    <p class="text-sm text-yellow-700 font-bold mt-1">
+                                        <span class="lang-en">Check Pending</span><span class="lang-hi">जाँच बाकी है</span>
+                                        <span class="lang-mr">तपासणी बाकी</span><span class="lang-pa">ਜਾਂਚ ਬਾਕੀ</span>
+                                        <span class="lang-ta">சோதனை நிலுவையில் உள்ளது</span><span class="lang-ml">പരിശോധന ബാക്കിയുണ്ട്</span>
+                                        <span class="lang-as">পৰীক্ষা বাকী আছে</span><span class="lang-bn">পরীক্ষা বাকি</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="text-right shrink-0 ml-2">
+                                <p class="font-extrabold text-lg text-gray-400">₹ --</p>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center p-4 bg-white border-2 border-green-200 rounded-2xl shadow-sm">
+                            <div class="flex items-center space-x-4">
+                                <div class="bg-green-100 p-3 rounded-full text-green-600 shrink-0"><i class="fa-solid fa-check-double text-xl"></i></div>
+                                <div>
+                                    <p class="font-extrabold text-lg text-gray-900">Lot #4020 - Soyabean</p>
+                                    <p class="text-sm text-green-700 font-bold mt-1">
+                                        <span class="lang-en">Money Sent to Bank</span><span class="lang-hi">पैसे बैंक में भेजे गए</span>
+                                        <span class="lang-mr">बँकेत पैसे पाठवले</span><span class="lang-pa">ਪੈਸੇ ਬੈਂਕ ਭੇਜੇ ਗਏ</span>
+                                        <span class="lang-ta">பணம் வங்கிக்கு அனுப்பப்பட்டது</span><span class="lang-ml">പണം ബാങ്കിലേക്ക് അയച്ചു</span>
+                                        <span class="lang-as">পইচা বেংকলৈ পঠিওৱা হৈছে</span><span class="lang-bn">টাকা ব্যাংকে পাঠানো হয়েছে</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="text-right shrink-0 ml-2">
+                                <p class="font-black text-xl text-green-600">+ ₹ 42,500</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
