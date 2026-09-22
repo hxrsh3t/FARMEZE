@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,7 +14,7 @@
            NATIVE CSS LOGIC (Zero JavaScript)
            ---------------------------------------------------------------- */
         .state-controller { display: none; }
-        #mainDashboard, #notificationMenu, #bookingModal, #paymentModal, #confirmModal { display: none; }
+        #mainDashboard, #notificationMenu, #bookingModal, #paymentModal, #confirmModal, #supportModal { display: none; }
 
         /* 1. 8-Language Hiding Logic */
         .lang-en, .lang-hi, .lang-mr, .lang-pa, .lang-ta, .lang-ml, .lang-as, .lang-bn { display: none; }
@@ -58,6 +57,7 @@
         #state-booking:checked ~ .app-wrapper #bookingModal { display: flex; }
         #state-payment:checked ~ .app-wrapper #paymentModal { display: flex; }
         #state-confirm:checked ~ .app-wrapper #confirmModal { display: flex; }
+        #state-support:checked ~ .app-wrapper #supportModal { display: flex; }
 
         /* 8. Custom Radio Button Logic for Slots */
         input[name="centre"]:checked + label { background-color: #f0fdf4 !important; border-color: #16a34a !important; }
@@ -100,12 +100,13 @@
     <input type="radio" name="modal-state" id="state-booking" class="state-controller">
     <input type="radio" name="modal-state" id="state-payment" class="state-controller">
     <input type="radio" name="modal-state" id="state-confirm" class="state-controller">
+    <input type="radio" name="modal-state" id="state-support" class="state-controller">
 
     <div class="app-wrapper w-full h-full">
 
         <!-- ==================== LOGIN SCREEN ==================== -->
         <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-green-600 p-4 absolute inset-0 z-0">
-            <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 sm:p-8 text-center">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 sm:p-8 text-center">
                 <div class="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="fa-solid fa-wheat-awn text-4xl text-green-600"></i>
                 </div>
@@ -130,13 +131,13 @@
                             <span class="lang-ta">மொபைல் எண்</span><span class="lang-ml">മൊബൈൽ നമ്പർ</span>
                             <span class="lang-as">ম'বাইল নম্বৰ</span><span class="lang-bn">মোবাইল নম্বর</span>
                         </label>
-                        <input type="tel" value="9876543210" class="w-full border-2 border-gray-300 rounded-xl p-4 text-lg outline-none focus:border-green-500 bg-gray-50">
+                        <input type="tel" value="7724893134" class="w-full border border-gray-300 rounded-xl p-4 text-lg outline-none focus:border-green-500 bg-gray-50">
                     </div>
                     <div>
                         <label class="block text-lg font-bold text-gray-700 mb-2">
                             <i class="fa-solid fa-lock text-green-600 mr-2"></i>OTP
                         </label>
-                        <input type="password" value="1234" class="w-full border-2 border-gray-300 rounded-xl p-4 text-lg outline-none focus:border-green-500 bg-gray-50 tracking-[0.5em] font-bold">
+                        <input type="password" value="1234" class="w-full border border-gray-300 rounded-xl p-4 text-lg outline-none focus:border-green-500 bg-gray-50 tracking-[0.5em] font-bold">
                     </div>
                     
                     <label for="login-toggle" class="block w-full bg-green-600 text-white font-extrabold text-xl py-4 rounded-xl hover:bg-green-700 shadow-lg mt-6 active:scale-95 transition text-center cursor-pointer">
@@ -161,8 +162,8 @@
                         
                         <!-- PURE CSS DROPDOWN MENU FOR LANGUAGES -->
                         <div class="lang-dropdown-wrapper relative outline-none z-50" tabindex="0">
-                            <!-- Dropdown Button (Looks exactly like your original button) -->
-                            <div class="bg-white text-green-700 font-bold px-4 py-2 rounded-lg shadow border-2 border-green-700 transition cursor-pointer select-none flex items-center active:scale-95">
+                            <!-- Dropdown Button -->
+                            <div class="bg-white text-green-700 font-bold px-4 py-2 rounded-lg shadow border border-green-700 transition cursor-pointer select-none flex items-center active:scale-95">
                                 <i class="fa-solid fa-language mr-1 text-base"></i> 
                                 <span class="lang-en">English</span>
                                 <span class="lang-hi">हिंदी</span>
@@ -176,7 +177,7 @@
                             </div>
                             
                             <!-- Dropdown List -->
-                            <div class="lang-dropdown-menu absolute right-0 top-full mt-2 w-36 bg-white rounded-xl shadow-2xl border-2 border-green-700 overflow-hidden hidden flex-col transition-all">
+                            <div class="lang-dropdown-menu absolute right-0 top-full mt-2 w-36 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden hidden flex-col transition-all">
                                 <label for="lang-en" class="btn-lang-en block px-4 py-3 text-sm font-bold text-gray-700 hover:bg-green-100 hover:text-green-800 cursor-pointer border-b border-gray-100">English</label>
                                 <label for="lang-hi" class="btn-lang-hi block px-4 py-3 text-sm font-bold text-gray-700 hover:bg-green-100 hover:text-green-800 cursor-pointer border-b border-gray-100">हिंदी</label>
                                 <label for="lang-mr" class="btn-lang-mr block px-4 py-3 text-sm font-bold text-gray-700 hover:bg-green-100 hover:text-green-800 cursor-pointer border-b border-gray-100">मराठी</label>
@@ -200,7 +201,7 @@
                 <div class="p-4 border-b text-lg font-bold text-gray-800 bg-gray-50 flex justify-between items-center">
                     <span class="lang-en">Notifications</span><span class="lang-hi">सूचनाएं</span>
                     <span class="lang-mr">सूचना</span><span class="lang-pa">ਸੂਚਨਾਵਾਂ</span>
-                    <span class="lang-ta">அறிவிப்புகள்</span><span class="lang-ml">അറിയിപ്പുകൾ</span>
+                    <span class="lang-ta">அறிவிப்புகள்</span><span class="lang-ml">அറിയിപ്പുകൾ</span>
                     <span class="lang-as">জাননীসমূহ</span><span class="lang-bn">বিজ্ঞপ্তি</span>
                     <label for="notif-toggle" class="text-gray-400 hover:text-gray-600 cursor-pointer"><i class="fa-solid fa-xmark text-xl"></i></label>
                 </div>
@@ -248,8 +249,8 @@
 
             <main class="max-w-4xl mx-auto px-4 py-6 space-y-6">
                 <!-- User Profile -->
-                <div class="bg-white rounded-3xl p-6 shadow-md border border-gray-200 flex items-center space-x-5">
-                    <div class="h-20 w-20 bg-green-100 text-green-700 rounded-full flex items-center justify-center text-3xl font-extrabold shrink-0 border-4 border-green-200">
+                <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-200 flex items-center space-x-5">
+                    <div class="h-20 w-20 bg-green-100 text-green-700 rounded-full flex items-center justify-center text-3xl font-extrabold shrink-0 border-2 border-green-200">
                         <i class="fa-solid fa-user"></i>
                     </div>
                     <div>
@@ -273,7 +274,7 @@
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
-                    <label for="state-booking" class="bg-gradient-to-b from-green-500 to-green-600 text-white rounded-3xl p-6 shadow-lg hover:shadow-xl active:scale-95 transition flex flex-col items-center justify-center border border-green-700 cursor-pointer">
+                    <label for="state-booking" class="bg-gradient-to-b from-green-500 to-green-600 text-white rounded-2xl p-6 shadow-lg hover:shadow-xl active:scale-95 transition flex flex-col items-center justify-center border border-green-700 cursor-pointer">
                         <i class="fa-solid fa-truck-ramp-box text-5xl mb-4 drop-shadow-md"></i>
                         <span class="font-extrabold text-xl sm:text-2xl text-center leading-tight">
                             <span class="lang-en">Book Mandi Slot</span><span class="lang-hi">मंडी स्लॉट बुक करें</span>
@@ -282,7 +283,7 @@
                             <span class="lang-as">মাণ্ডি স্লট বুক কৰক</span><span class="lang-bn">মান্ডি স্লট বুক করুন</span>
                         </span>
                     </label>
-                    <label for="state-payment" class="bg-gradient-to-b from-blue-500 to-blue-600 text-white rounded-3xl p-6 shadow-lg hover:shadow-xl active:scale-95 transition flex flex-col items-center justify-center border border-blue-700 cursor-pointer">
+                    <label for="state-payment" class="bg-gradient-to-b from-blue-500 to-blue-600 text-white rounded-2xl p-6 shadow-lg hover:shadow-xl active:scale-95 transition flex flex-col items-center justify-center border border-blue-700 cursor-pointer">
                         <i class="fa-solid fa-wallet text-5xl mb-4 drop-shadow-md"></i>
                         <span class="font-extrabold text-xl sm:text-2xl text-center leading-tight">
                             <span class="lang-en">My Payments</span><span class="lang-hi">मेरे भुगतान</span>
@@ -364,7 +365,7 @@
                         <span class="lang-as">মোৰ পঞ্জীয়নভুক্ত শস্য</span><span class="lang-bn">আমার নিবন্ধিত ফসল</span>
                     </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-5 shadow-sm">
+                        <div class="bg-yellow-50 border border-yellow-300 rounded-2xl p-5 shadow-sm">
                             <div class="flex justify-between items-center mb-3">
                                 <div class="bg-white p-3 rounded-full shadow"><i class="fa-solid fa-wheat-awn text-yellow-600 text-3xl"></i></div>
                                 <span class="text-sm bg-yellow-200 text-yellow-800 px-3 py-1.5 rounded-lg font-extrabold">Rabi</span>
@@ -382,7 +383,7 @@
                                 <span class="lang-as">অনুমান: 50 কুইন্টল</span><span class="lang-bn">অনুমান: 50 কুইন্টাল</span>
                             </p>
                         </div>
-                        <div class="bg-green-50 border-2 border-green-300 rounded-2xl p-5 shadow-sm">
+                        <div class="bg-green-50 border border-green-300 rounded-2xl p-5 shadow-sm">
                             <div class="flex justify-between items-center mb-3">
                                 <div class="bg-white p-3 rounded-full shadow"><i class="fa-solid fa-leaf text-green-600 text-3xl"></i></div>
                                 <span class="text-sm bg-green-200 text-green-800 px-3 py-1.5 rounded-lg font-extrabold">Kharif</span>
@@ -400,7 +401,7 @@
                                 <span class="lang-as">অনুমান: 30 কুইন্টল</span><span class="lang-bn">অনুমান: 30 কুইন্টাল</span>
                             </p>
                         </div>
-                        <div class="bg-blue-50 border-2 border-blue-300 rounded-2xl p-5 shadow-sm">
+                        <div class="bg-blue-50 border border-blue-300 rounded-2xl p-5 shadow-sm">
                             <div class="flex justify-between items-center mb-3">
                                 <div class="bg-white p-3 rounded-full shadow"><i class="fa-solid fa-bowl-rice text-blue-600 text-3xl"></i></div>
                                 <span class="text-sm bg-blue-200 text-blue-800 px-3 py-1.5 rounded-lg font-extrabold">Kharif</span>
@@ -418,7 +419,7 @@
                                 <span class="lang-as">অনুমান: 40 কুইন্টল</span><span class="lang-bn">অনুমান: 40 কুইন্টাল</span>
                             </p>
                         </div>
-                        <div class="bg-orange-50 border-2 border-orange-300 rounded-2xl p-5 shadow-sm">
+                        <div class="bg-orange-50 border border-orange-300 rounded-2xl p-5 shadow-sm">
                             <div class="flex justify-between items-center mb-3">
                                 <div class="bg-white p-3 rounded-full shadow"><i class="fa-brands fa-pagelines text-orange-600 text-3xl"></i></div>
                                 <span class="text-sm bg-orange-200 text-orange-800 px-3 py-1.5 rounded-lg font-extrabold">Rabi</span>
@@ -440,7 +441,7 @@
                 </div>
 
                 <!-- ==================== LIVE STATUS TRACKING ==================== -->
-                <div id="trackingContainer" class="scroll-mt-32 transition-all duration-500 rounded-3xl">
+                <div id="trackingContainer" class="scroll-mt-32 transition-all duration-500 rounded-2xl">
                     <h3 class="text-xl font-extrabold text-gray-800 mb-4 flex items-center">
                         <i class="fa-solid fa-location-crosshairs text-red-500 mr-2 text-2xl"></i>
                         <span class="lang-en">Live Status (Lot #4092)</span><span class="lang-hi">लाइव स्थिति (लॉट #4092)</span>
@@ -448,7 +449,7 @@
                         <span class="lang-ta">நேரடி நிலை (லாட் #4092)</span><span class="lang-ml">തത്സമയ അവസ്ഥ (ലോട്ട് #4092)</span>
                         <span class="lang-as">লাইভ স্থিতি (লট #4092)</span><span class="lang-bn">লাইভ স্ট্যাটাস (লট #4092)</span>
                     </h3>
-                    <div id="trackingCard" class="bg-white rounded-3xl p-6 shadow-md border-2 border-gray-200">
+                    <div id="trackingCard" class="bg-white rounded-2xl p-6 shadow-md border border-gray-200">
                         <div class="flex items-center mb-8 mt-2 px-2 w-full">
                             <div class="bg-green-500 text-white rounded-full h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center font-bold z-10 shadow-lg text-xl shrink-0"><i class="fa-solid fa-check"></i></div>
                             <div class="flex-1 h-3 bg-green-500 -ml-2 rounded-r"></div>
@@ -478,7 +479,7 @@
                             </div>
                         </div>
                         
-                        <div class="mt-6 p-4 bg-blue-50 rounded-2xl border-2 border-blue-200 flex items-center space-x-4 shadow-sm">
+                        <div class="mt-6 p-4 bg-blue-50 rounded-2xl border border-blue-200 flex items-center space-x-4 shadow-sm">
                             <div class="bg-blue-600 text-white p-3 rounded-full shrink-0"><i class="fa-solid fa-circle-info text-xl"></i></div>
                             <p class="text-sm sm:text-base text-blue-900 font-bold leading-relaxed">
                                 <span class="lang-en">Your crop is currently at the Mandi for quality check. We will SMS you once it is accepted.</span>
@@ -494,12 +495,74 @@
                     </div>
                 </div>
             </main>
+
+            <!-- ==================== CUSTOMER SUPPORT FLOATING BUTTON ==================== -->
+            <label for="state-support" class="fixed bottom-6 right-6 bg-gray-800 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl hover:bg-gray-900 transition cursor-pointer z-40 active:scale-95 border-2 border-white">
+                <i class="fa-solid fa-headset text-2xl"></i>
+            </label>
+
+        </div>
+
+        <!-- ==================== SUPPORT MODAL ==================== -->
+        <div id="supportModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-end sm:items-center justify-center z-50">
+            <div class="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden">
+                <div class="bg-gray-800 px-6 py-4 flex justify-between items-center text-white shrink-0 sm:rounded-t-2xl">
+                    <h3 class="font-extrabold text-2xl">
+                        <span class="lang-en">Help & Support</span><span class="lang-hi">सहायता और समर्थन</span>
+                        <span class="lang-mr">मदत आणि समर्थन</span><span class="lang-pa">ਮਦਦ ਅਤੇ ਸਹਾਇਤਾ</span>
+                        <span class="lang-ta">உதவி மற்றும் ஆதரவு</span><span class="lang-ml">സഹായവും പിന്തുണയും</span>
+                        <span class="lang-as">সহায় আৰু সমৰ্থন</span><span class="lang-bn">সাহায্য এবং সমর্থন</span>
+                    </h3>
+                    <label for="state-none" class="text-white bg-gray-700 hover:bg-gray-600 w-10 h-10 rounded-full flex items-center justify-center transition cursor-pointer">
+                        <i class="fa-solid fa-xmark text-2xl"></i>
+                    </label>
+                </div>
+                
+                <div class="p-6 bg-gray-50 flex-1 space-y-4">
+                    <p class="text-gray-500 font-bold mb-2">
+                        <span class="lang-en">How can we help you today?</span><span class="lang-hi">आज हम आपकी कैसे मदद कर सकते हैं?</span>
+                        <span class="lang-mr">आज आम्ही तुमची कशी मदत करू शकतो?</span><span class="lang-pa">ਅਸੀਂ ਅੱਜ ਤੁਹਾਡੀ ਕਿਵੇਂ ਮਦਦ ਕਰ ਸਕਦੇ ਹਾਂ?</span>
+                        <span class="lang-ta">இன்று நாங்கள் உங்களுக்கு எப்படி உதவ முடியும்?</span><span class="lang-ml">ഇന്ന് ഞങ്ങൾക്ക് നിങ്ങളെ എങ്ങനെ സഹായിക്കാനാകും?</span>
+                        <span class="lang-as">আমি আজি আপোনাক কেনেকৈ সহায় কৰিব পাৰোঁ?</span><span class="lang-bn">আজ আমরা আপনাকে কীভাবে সাহায্য করতে পারি?</span>
+                    </p>
+
+                    <a href="tel:+917724893134" class="flex items-center p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:border-green-500 transition active:scale-95">
+                        <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xl shrink-0 mr-4">
+                            <i class="fa-solid fa-phone"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-gray-900 text-lg">
+                                <span class="lang-en">Call Us</span><span class="lang-hi">हमें कॉल करें</span>
+                                <span class="lang-mr">आम्हाला कॉल करा</span><span class="lang-pa">ਸਾਨੂੰ ਕਾਲ ਕਰੋ</span>
+                                <span class="lang-ta">அழைக்க</span><span class="lang-ml">വിളിക്കുക</span>
+                                <span class="lang-as">কল কৰক</span><span class="lang-bn">কল করুন</span>
+                            </h4>
+                            <p class="text-sm text-gray-500 font-bold mt-0.5">+91 77248 93134</p>
+                        </div>
+                    </a>
+
+                    <a href="https://wa.me/917724893134" target="_blank" class="flex items-center p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:border-green-500 transition active:scale-95">
+                        <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xl shrink-0 mr-4">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-gray-900 text-lg">
+                                <span class="lang-en">WhatsApp Chat</span><span class="lang-hi">व्हाट्सएप चैट</span>
+                                <span class="lang-mr">व्हॉट्सॲप चॅट</span><span class="lang-pa">ਵਟਸਐਪ ਚੈਟ</span>
+                                <span class="lang-ta">வாட்ஸ்அப் அரட்டை</span><span class="lang-ml">വാട്ട്‌സ്ആപ്പ് ചാറ്റ്</span>
+                                <span class="lang-as">হোৱাটছএপ চেট</span><span class="lang-bn">হোয়াটসঅ্যাপ চ্যাট</span>
+                            </h4>
+                            <p class="text-sm text-gray-500 font-bold mt-0.5">+91 77248 93134</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
 
         <!-- ==================== BOOKING MODAL ==================== -->
         <div id="bookingModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-end sm:items-center justify-center z-50">
-            <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-lg h-[85vh] flex flex-col">
-                <div class="bg-green-600 px-6 py-4 flex justify-between items-center text-white shrink-0 shadow-md sm:rounded-t-3xl">
+            <div class="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-lg h-[85vh] flex flex-col">
+                <div class="bg-green-600 px-6 py-4 flex justify-between items-center text-white shrink-0 shadow-md sm:rounded-t-2xl">
                     <h3 class="font-extrabold text-2xl">
                         <span class="lang-en">Book Mandi Slot</span><span class="lang-hi">मंडी स्लॉट बुक करें</span>
                         <span class="lang-mr">मंडी स्लॉट बुक करा</span><span class="lang-pa">ਮੰਡੀ ਸਲਾਟ ਬੁੱਕ ਕਰੋ</span>
@@ -522,28 +585,28 @@
                         </label>
                         
                         <div class="lang-en w-full">
-                            <select class="w-full border-2 border-gray-300 rounded-2xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>Wheat - 50 Qtl</option><option>Soyabean - 30 Qtl</option><option>Paddy - 40 Qtl</option><option>Mustard - 20 Qtl</option></select>
+                            <select class="w-full border border-gray-300 rounded-xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>Wheat - 50 Qtl</option><option>Soyabean - 30 Qtl</option><option>Paddy - 40 Qtl</option><option>Mustard - 20 Qtl</option></select>
                         </div>
                         <div class="lang-hi w-full">
-                            <select class="w-full border-2 border-gray-300 rounded-2xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>गेहूँ - 50 क्विंटल</option><option>सोयाबीन - 30 क्विंटल</option><option>धान - 40 क्विंटल</option><option>सरसों - 20 क्विंटल</option></select>
+                            <select class="w-full border border-gray-300 rounded-xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>गेहूँ - 50 क्विंटल</option><option>सोयाबीन - 30 क्विंटल</option><option>धान - 40 क्विंटल</option><option>सरसों - 20 क्विंटल</option></select>
                         </div>
                         <div class="lang-mr w-full">
-                            <select class="w-full border-2 border-gray-300 rounded-2xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>गहू - 50 क्विंटल</option><option>सोयाबीन - 30 क्विंटल</option><option>भात - 40 क्विंटल</option><option>मोहरी - 20 क्विंटल</option></select>
+                            <select class="w-full border border-gray-300 rounded-xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>गहू - 50 क्विंटल</option><option>सोयाबीन - 30 क्विंटल</option><option>भात - 40 क्विंटल</option><option>मोहरी - 20 क्विंटल</option></select>
                         </div>
                         <div class="lang-pa w-full">
-                            <select class="w-full border-2 border-gray-300 rounded-2xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>ਕਣਕ - 50 ਕੁਇੰਟਲ</option><option>ਸੋਇਆਬੀਨ - 30 ਕੁਇੰਟਲ</option><option>ਝੋਨਾ - 40 ਕੁਇੰਟਲ</option><option>ਸਰ੍ਹੋਂ - 20 ਕੁਇੰਟਲ</option></select>
+                            <select class="w-full border border-gray-300 rounded-xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>ਕਣਕ - 50 ਕੁਇੰਟਲ</option><option>ਸੋਇਆਬੀਨ - 30 ਕੁਇੰਟਲ</option><option>ਝੋਨਾ - 40 ਕੁਇੰਟਲ</option><option>ਸਰ੍ਹੋਂ - 20 ਕੁਇੰਟਲ</option></select>
                         </div>
                         <div class="lang-ta w-full">
-                            <select class="w-full border-2 border-gray-300 rounded-2xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>கோதுமை - 50 குவிண்டால்</option><option>சோயாபீன் - 30 குவிண்டால்</option><option>நெல் - 40 குவிண்டால்</option><option>கடுகு - 20 குவிண்டால்</option></select>
+                            <select class="w-full border border-gray-300 rounded-xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>கோதுமை - 50 குவிண்டால்</option><option>சோயாபீன் - 30 குவிண்டால்</option><option>நெல் - 40 குவிண்டால்</option><option>கடுகு - 20 குவிண்டால்</option></select>
                         </div>
                         <div class="lang-ml w-full">
-                            <select class="w-full border-2 border-gray-300 rounded-2xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>ഗോതമ്പ് - 50 ക്വിന്റൽ</option><option>സോയാബീൻ - 30 ക്വിന്റൽ</option><option>നെല്ല് - 40 ക്വിന്റൽ</option><option>കടുക് - 20 ക്വിന്റൽ</option></select>
+                            <select class="w-full border border-gray-300 rounded-xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>ഗോതമ്പ് - 50 ക്വിന്റൽ</option><option>സോയാബീൻ - 30 ക്വിന്റൽ</option><option>നെല്ല് - 40 ക്വിന്റൽ</option><option>കടുക് - 20 ക്വിന്റൽ</option></select>
                         </div>
                         <div class="lang-as w-full">
-                            <select class="w-full border-2 border-gray-300 rounded-2xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>ঘেঁহু - 50 কুইন্টল</option><option>চয়াবিন - 30 কুইন্টল</option><option>ধান - 40 কুইন্টল</option><option>সৰিয়হ - 20 কুইন্টল</option></select>
+                            <select class="w-full border border-gray-300 rounded-xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>ঘেঁহু - 50 কুইন্টল</option><option>চয়াবিন - 30 কুইন্টল</option><option>ধান - 40 কুইন্টল</option><option>সৰিয়হ - 20 কুইন্টল</option></select>
                         </div>
                         <div class="lang-bn w-full">
-                            <select class="w-full border-2 border-gray-300 rounded-2xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>গম - 50 কুইন্টাল</option><option>সয়াবিন - 30 কুইন্টাল</option><option>ধান - 40 কুইন্টাল</option><option>সর্ষে - 20 কুইন্টাল</option></select>
+                            <select class="w-full border border-gray-300 rounded-xl p-4 text-lg font-bold bg-gray-50 outline-none focus:border-green-500 shadow-sm appearance-none"><option>গম - 50 কুইন্টাল</option><option>সয়াবিন - 30 কুইন্টাল</option><option>ধান - 40 কুইন্টাল</option><option>সর্ষে - 20 কুইন্টাল</option></select>
                         </div>
                     </div>
 
@@ -565,7 +628,7 @@
                         </label>
                         <div class="space-y-3">
                             <input type="radio" id="centre1" name="centre" checked class="hidden">
-                            <label for="centre1" class="flex items-center p-4 border-2 border-gray-200 bg-white rounded-2xl cursor-pointer transition shadow-sm select-none">
+                            <label for="centre1" class="flex items-center p-4 border border-gray-200 bg-white rounded-2xl cursor-pointer transition shadow-sm select-none">
                                 <div class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center mr-4 radio-outer bg-white shrink-0">
                                     <div class="w-3 h-3 bg-green-600 rounded-full radio-inner hidden"></div>
                                 </div>
@@ -586,7 +649,7 @@
                             </label>
 
                             <input type="radio" id="centre2" name="centre" class="hidden">
-                            <label for="centre2" class="flex items-center p-4 border-2 border-gray-200 bg-white rounded-2xl cursor-pointer transition shadow-sm select-none">
+                            <label for="centre2" class="flex items-center p-4 border border-gray-200 bg-white rounded-2xl cursor-pointer transition shadow-sm select-none">
                                 <div class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center mr-4 radio-outer bg-white shrink-0">
                                     <div class="w-3 h-3 bg-green-600 rounded-full radio-inner hidden"></div>
                                 </div>
@@ -615,14 +678,14 @@
                             <span class="lang-ta">3. தேதி மற்றும் நேரத்தைத் தேர்ந்தெடு</span><span class="lang-ml">3. തീയതിയും സമയവും തിരഞ്ഞെടുക്കുക</span>
                             <span class="lang-as">3. তাৰিখ আৰু সময় বাছক</span><span class="lang-bn">3. তারিখ এবং সময় বেছে নিন</span>
                         </label>
-                        <input type="date" value="2027-05-16" min="2027-05-16" class="w-full border-2 border-gray-300 rounded-2xl p-4 text-lg font-bold outline-none focus:border-green-500 text-gray-800 bg-white shadow-sm mb-4">
+                        <input type="date" value="2027-05-16" min="2027-05-16" class="w-full border border-gray-300 rounded-2xl p-4 text-lg font-bold outline-none focus:border-green-500 text-gray-800 bg-white shadow-sm mb-4">
                         
                         <div class="grid grid-cols-2 gap-3">
                             <input type="radio" id="slot1" name="slot" class="hidden">
-                            <label for="slot1" class="block border-2 border-green-500 text-green-700 bg-green-50 rounded-2xl py-4 text-center text-lg font-extrabold hover:bg-green-100 transition shadow-sm cursor-pointer select-none">09:00 AM</label>
+                            <label for="slot1" class="block border border-green-500 text-green-700 bg-green-50 rounded-2xl py-4 text-center text-lg font-extrabold hover:bg-green-100 transition shadow-sm cursor-pointer select-none">09:00 AM</label>
                             
                             <input type="radio" id="slot2" name="slot" disabled class="hidden">
-                            <label for="slot2" class="block border-2 border-red-200 text-red-500 bg-red-50 rounded-2xl py-3 text-center text-lg font-extrabold opacity-70 cursor-not-allowed select-none">
+                            <label for="slot2" class="block border border-red-200 text-red-500 bg-red-50 rounded-2xl py-3 text-center text-lg font-extrabold opacity-70 cursor-not-allowed select-none">
                                 10:00 AM <span class="block text-xs text-red-600 mt-0.5 uppercase">
                                     <span class="lang-en">Full</span><span class="lang-hi">फुल</span>
                                     <span class="lang-mr">पूर्ण</span><span class="lang-pa">ਭਰਿਆ</span>
@@ -632,10 +695,10 @@
                             </label>
                             
                             <input type="radio" id="slot3" name="slot" class="hidden">
-                            <label for="slot3" class="block border-2 border-green-500 text-green-700 bg-green-50 rounded-2xl py-4 text-center text-lg font-extrabold hover:bg-green-100 transition shadow-sm cursor-pointer select-none">11:30 AM</label>
+                            <label for="slot3" class="block border border-green-500 text-green-700 bg-green-50 rounded-2xl py-4 text-center text-lg font-extrabold hover:bg-green-100 transition shadow-sm cursor-pointer select-none">11:30 AM</label>
                             
                             <input type="radio" id="slot4" name="slot" checked class="hidden">
-                            <label for="slot4" class="block border-2 border-green-500 text-green-700 bg-green-50 rounded-2xl py-4 text-center text-lg font-extrabold hover:bg-green-100 transition shadow-sm cursor-pointer select-none">01:00 PM</label>
+                            <label for="slot4" class="block border border-green-500 text-green-700 bg-green-50 rounded-2xl py-4 text-center text-lg font-extrabold hover:bg-green-100 transition shadow-sm cursor-pointer select-none">01:00 PM</label>
                         </div>
                     </div>
                 </div>
@@ -653,7 +716,7 @@
 
         <!-- ==================== CONFIRM MODAL ==================== -->
         <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-end sm:items-center justify-center z-50">
-            <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-sm flex flex-col overflow-hidden text-center mx-auto mb-0 sm:mb-20">
+            <div class="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-sm flex flex-col overflow-hidden text-center mx-auto mb-0 sm:mb-20">
                 <div class="p-8 pb-6">
                     <div class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
                         <i class="fa-solid fa-check text-5xl"></i>
@@ -671,7 +734,7 @@
                         <span class="lang-as">আপোনাৰ মাণ্ডি স্লট সাজু।</span><span class="lang-bn">আপনার মান্ডি স্লট প্রস্তুত।</span>
                     </p>
                     
-                    <div class="bg-gray-50 border-2 border-dashed border-green-400 rounded-2xl p-5 mb-6 text-left shadow-sm">
+                    <div class="bg-gray-50 border border-gray-200 border-dashed border-green-400 rounded-2xl p-5 mb-6 text-left shadow-sm">
                         <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Unique Booking ID</p>
                         <h2 class="text-2xl font-black text-green-700 tracking-wide">BKG-9842-MP</h2>
                         <div class="mt-3 pt-3 border-t border-gray-200 flex justify-between text-sm font-bold text-gray-700">
@@ -692,8 +755,8 @@
 
         <!-- ==================== PAYMENT MODAL ==================== -->
         <div id="paymentModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-end sm:items-center justify-center z-50">
-            <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-lg h-[80vh] sm:h-auto sm:max-h-[85vh] flex flex-col">
-                <div class="bg-blue-600 px-6 py-4 flex justify-between items-center text-white shrink-0 shadow-md sm:rounded-t-3xl">
+            <div class="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-lg h-[80vh] sm:h-auto sm:max-h-[85vh] flex flex-col">
+                <div class="bg-blue-600 px-6 py-4 flex justify-between items-center text-white shrink-0 shadow-md sm:rounded-t-2xl">
                     <h3 class="font-extrabold text-2xl">
                         <span class="lang-en">Bank & Payments</span><span class="lang-hi">बैंक और भुगतान</span>
                         <span class="lang-mr">बँक आणि पेमेंट</span><span class="lang-pa">ਬੈਂਕ ਅਤੇ ਭੁਗਤਾਨ</span>
@@ -706,7 +769,7 @@
                 </div>
                 
                 <div class="p-6 bg-gray-50 overflow-y-auto flex-1">
-                    <div class="bg-white border-2 border-green-200 rounded-3xl p-6 mb-6 text-center shadow-md relative overflow-hidden">
+                    <div class="bg-white border border-gray-200 rounded-2xl p-6 mb-6 text-center shadow-md relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-full h-2 bg-green-500"></div>
                         <p class="text-sm text-gray-500 font-bold mb-2 uppercase tracking-wide">
                             <span class="lang-en">Total Earned (2026)</span><span class="lang-hi">कुल कमाई (2026)</span>
@@ -728,7 +791,7 @@
                     </h4>
                     
                     <div class="space-y-3">
-                        <div class="flex justify-between items-center p-4 bg-white border-2 border-yellow-200 rounded-2xl shadow-sm">
+                        <div class="flex justify-between items-center p-4 bg-white border border-yellow-200 rounded-2xl shadow-sm">
                             <div class="flex items-center space-x-4">
                                 <div class="bg-yellow-100 p-3 rounded-full text-yellow-600 shrink-0"><i class="fa-solid fa-clock text-xl"></i></div>
                                 <div>
@@ -746,7 +809,7 @@
                             </div>
                         </div>
 
-                        <div class="flex justify-between items-center p-4 bg-white border-2 border-green-200 rounded-2xl shadow-sm">
+                        <div class="flex justify-between items-center p-4 bg-white border border-green-200 rounded-2xl shadow-sm">
                             <div class="flex items-center space-x-4">
                                 <div class="bg-green-100 p-3 rounded-full text-green-600 shrink-0"><i class="fa-solid fa-check-double text-xl"></i></div>
                                 <div>
