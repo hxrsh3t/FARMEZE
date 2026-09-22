@@ -104,48 +104,85 @@
 
     <div class="app-wrapper w-full h-full">
 
-        <!-- ==================== LOGIN SCREEN ==================== -->
-        <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-green-600 p-4 absolute inset-0 z-0">
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 sm:p-8 text-center">
-                <div class="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fa-solid fa-wheat-awn text-4xl text-green-600"></i>
-                </div>
-                <h1 class="text-4xl font-extrabold text-gray-800 mb-2">FARMEZE</h1>
-                <p class="text-base text-gray-500 mb-8 font-medium">
-                    <span class="lang-en">Simple. Transparent. Fast.</span>
-                    <span class="lang-hi">सरल. पारदर्शी. तेज़.</span>
-                    <span class="lang-mr">सोपे. पारदर्शक. जलद.</span>
-                    <span class="lang-pa">ਸਧਾਰਨ. ਪਾਰਦਰਸ਼ੀ. ਤੇਜ਼.</span>
-                    <span class="lang-ta">எளிமையானது. வெளிப்படையானது. வேகமானது.</span>
-                    <span class="lang-ml">ലളിതം. സുതാര്യം. വേഗം.</span>
-                    <span class="lang-as">সৰল. স্বচ্ছ. দ্ৰুত.</span>
-                    <span class="lang-bn">সরল. স্বচ্ছ. দ্রুত.</span>
-                </p>
+        <!-- ==================== LOGIN SCREEN (NEW PROFESSIONAL DESIGN) ==================== -->
+        <div id="loginScreen" class="min-h-screen flex flex-col sm:flex-row absolute inset-0 z-0 bg-white">
+            
+            <!-- Left/Top Branding Panel -->
+            <div class="sm:w-5/12 bg-green-700 text-white flex flex-col justify-center p-8 sm:p-12 lg:p-16 relative overflow-hidden shrink-0">
+                <!-- Subtle graphic overlay -->
+                <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-white/10 to-transparent"></div>
+                <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-green-600 rounded-full blur-3xl opacity-50"></div>
                 
-                <div class="space-y-5 text-left">
-                    <div>
-                        <label class="block text-lg font-bold text-gray-700 mb-2">
-                            <i class="fa-solid fa-phone text-green-600 mr-2"></i>
-                            <span class="lang-en">Mobile Number</span><span class="lang-hi">मोबाइल नंबर</span>
-                            <span class="lang-mr">मोबाईल नंबर</span><span class="lang-pa">ਮੋਬਾਈਲ ਨੰਬਰ</span>
-                            <span class="lang-ta">மொபைல் எண்</span><span class="lang-ml">മൊബൈൽ നമ്പർ</span>
-                            <span class="lang-as">ম'বাইল নম্বৰ</span><span class="lang-bn">মোবাইল নম্বর</span>
-                        </label>
-                        <input type="tel" value="7724893134" class="w-full border border-gray-300 rounded-xl p-4 text-lg outline-none focus:border-green-500 bg-gray-50">
+                <div class="relative z-10">
+                    <div class="w-14 h-14 bg-white text-green-700 rounded-2xl flex items-center justify-center mb-8 shadow-lg">
+                        <i class="fa-solid fa-wheat-awn text-2xl"></i>
                     </div>
-                    <div>
-                        <label class="block text-lg font-bold text-gray-700 mb-2">
-                            <i class="fa-solid fa-lock text-green-600 mr-2"></i>OTP
-                        </label>
-                        <input type="password" value="1234" class="w-full border border-gray-300 rounded-xl p-4 text-lg outline-none focus:border-green-500 bg-gray-50 tracking-[0.5em] font-bold">
-                    </div>
+                    <h1 class="text-4xl sm:text-5xl font-black mb-4 tracking-tight">FARMEZE</h1>
+                    <p class="text-lg sm:text-xl text-green-100 font-medium max-w-sm leading-relaxed">
+                        <span class="lang-en">Simple. Transparent. Fast.</span>
+                        <span class="lang-hi">सरल. पारदर्शी. तेज़.</span>
+                        <span class="lang-mr">सोपे. पारदर्शक. जलद.</span>
+                        <span class="lang-pa">ਸਧਾਰਨ. ਪਾਰਦਰਸ਼ੀ. ਤੇਜ਼.</span>
+                        <span class="lang-ta">எளிமையானது. வெளிப்படையானது. வேகமானது.</span>
+                        <span class="lang-ml">ലളിതം. സുതാര്യം. വേഗം.</span>
+                        <span class="lang-as">সৰল. স্বচ্ছ. দ্ৰুত.</span>
+                        <span class="lang-bn">সরল. স্বচ্ছ. দ্রুত.</span>
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Right/Bottom Login Form Panel -->
+            <div class="flex-1 flex flex-col justify-center bg-white p-8 sm:p-12 lg:p-24 relative z-10">
+                <div class="w-full max-w-md mx-auto">
+                    <h2 class="text-3xl font-extrabold text-gray-900 mb-2 tracking-tight">
+                        <span class="lang-en">Welcome back</span><span class="lang-hi">वापसी पर स्वागत है</span>
+                        <span class="lang-mr">परत स्वागत आहे</span><span class="lang-pa">ਵਾਪਸੀ 'ਤੇ ਸਵਾਗਤ ਹੈ</span>
+                        <span class="lang-ta">மீண்டும் வருக</span><span class="lang-ml">സ്വാഗതം</span>
+                        <span class="lang-as">পুনৰ স্বাগতম</span><span class="lang-bn">আবার স্বাগতম</span>
+                    </h2>
+                    <p class="text-gray-500 font-medium mb-10">
+                        <span class="lang-en">Enter your details to access your dashboard.</span><span class="lang-hi">अपना डैशबोर्ड देखने के लिए विवरण दर्ज करें।</span>
+                        <span class="lang-mr">तुमचा डॅशबोर्ड पाहण्यासाठी तपशील प्रविष्ट करा.</span><span class="lang-pa">ਆਪਣਾ ਡੈਸ਼ਬੋਰਡ ਦੇਖਣ ਲਈ ਵੇਰਵੇ ਦਰਜ ਕਰੋ।</span>
+                        <span class="lang-ta">உங்கள் டாஷ்போர்டை அணுக விவரங்களை உள்ளிடவும்.</span><span class="lang-ml">നിങ്ങളുടെ ഡാഷ്‌ബോർഡ് ആക്‌സസ് ചെയ്യാൻ വിശദാംശങ്ങൾ നൽകുക.</span>
+                        <span class="lang-as">আপোনাৰ ডেচবৰ্ড চাবলৈ বিৱৰণ দিয়ক।</span><span class="lang-bn">আপনার ড্যাশবোর্ড অ্যাক্সেস করতে বিবরণ দিন।</span>
+                    </p>
                     
-                    <label for="login-toggle" class="block w-full bg-green-600 text-white font-extrabold text-xl py-4 rounded-xl hover:bg-green-700 shadow-lg mt-6 active:scale-95 transition text-center cursor-pointer">
-                        <span class="lang-en">Login to Dashboard</span><span class="lang-hi">डैशबोर्ड में प्रवेश करें</span>
-                        <span class="lang-mr">डॅशबोर्डवर जा</span><span class="lang-pa">ਡੈਸ਼ਬੋਰਡ ਵਿੱਚ ਲੌਗਇਨ ਕਰੋ</span>
-                        <span class="lang-ta">டாஷ்போர்டில் நுழைக</span><span class="lang-ml">ഡാഷ്‌ബോർഡിലേക്ക് ലോഗിൻ ചെയ്യുക</span>
-                        <span class="lang-as">ডেচবৰ্ডত প্ৰৱেশ কৰক</span><span class="lang-bn">ড্যাশবোর্ডে লগইন করুন</span>
-                    </label>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">
+                                <span class="lang-en">Mobile Number</span><span class="lang-hi">मोबाइल नंबर</span>
+                                <span class="lang-mr">मोबाईल नंबर</span><span class="lang-pa">ਮੋਬਾਈਲ ਨੰਬਰ</span>
+                                <span class="lang-ta">மொபைல் எண்</span><span class="lang-ml">മൊബൈൽ നമ്പർ</span>
+                                <span class="lang-as">ম'বাইল নম্বৰ</span><span class="lang-bn">মোবাইল নম্বর</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fa-solid fa-phone text-gray-400"></i>
+                                </div>
+                                <input type="tel" value="7724893134" class="block w-full pl-11 pr-4 py-3.5 border border-gray-300 rounded-xl text-gray-900 font-semibold focus:ring-2 focus:ring-green-600 focus:border-green-600 outline-none transition-shadow bg-gray-50 focus:bg-white text-base">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">OTP</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fa-solid fa-lock text-gray-400"></i>
+                                </div>
+                                <input type="password" value="1234" class="block w-full pl-11 pr-4 py-3.5 border border-gray-300 rounded-xl text-gray-900 font-bold tracking-[0.5em] focus:ring-2 focus:ring-green-600 focus:border-green-600 outline-none transition-shadow bg-gray-50 focus:bg-white text-lg">
+                            </div>
+                        </div>
+                        
+                        <div class="pt-4">
+                            <label for="login-toggle" class="flex w-full items-center justify-center bg-green-700 text-white font-bold text-lg py-4 rounded-xl hover:bg-green-800 shadow-md shadow-green-700/20 transition-all active:scale-[0.98] cursor-pointer">
+                                <span class="lang-en">Login to Dashboard</span><span class="lang-hi">डैशबोर्ड में प्रवेश करें</span>
+                                <span class="lang-mr">डॅशबोर्डवर जा</span><span class="lang-pa">ਡੈਸ਼ਬੋਰਡ ਵਿੱਚ ਲੌਗਇਨ ਕਰੋ</span>
+                                <span class="lang-ta">டாஷ்போர்டில் நுழைக</span><span class="lang-ml">ഡാഷ്‌ബോർഡിലേക്ക് ലോഗിൻ ചെയ്യുക</span>
+                                <span class="lang-as">ডেচবৰ্ডত প্ৰৱেশ কৰক</span><span class="lang-bn">ড্যাশবোর্ডে লগইন করুন</span>
+                                <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -201,7 +238,7 @@
                 <div class="p-4 border-b text-lg font-bold text-gray-800 bg-gray-50 flex justify-between items-center">
                     <span class="lang-en">Notifications</span><span class="lang-hi">सूचनाएं</span>
                     <span class="lang-mr">सूचना</span><span class="lang-pa">ਸੂਚਨਾਵਾਂ</span>
-                    <span class="lang-ta">அறிவிப்புகள்</span><span class="lang-ml">அറിയിപ്പുകൾ</span>
+                    <span class="lang-ta">அறிவிப்புகள்</span><span class="lang-ml">അറിയിപ്പുകൾ</span>
                     <span class="lang-as">জাননীসমূহ</span><span class="lang-bn">বিজ্ঞপ্তি</span>
                     <label for="notif-toggle" class="text-gray-400 hover:text-gray-600 cursor-pointer"><i class="fa-solid fa-xmark text-xl"></i></label>
                 </div>
